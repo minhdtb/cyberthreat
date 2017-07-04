@@ -1,0 +1,6 @@
+logs
+*.log
+build
+node_modules/
+public/javascripts/main.js
+.idea/
