@@ -30,7 +30,6 @@ $(document).ready(() => {
 
     socket.get().subscribe((message: Message) => {
         let object = {};
-
         let pointer = 0;
 
         function rotateColors() {
