@@ -1,4 +1,4 @@
 import * as Sequelize from "sequelize";
 
-const sequelize = new Sequelize('cyber', 'root', '123456');
+const sequelize = new Sequelize('cmccyber', 'root', '');
 export default sequelize;

@@ -257,7 +257,7 @@
 
   TS("typescript_extend_operators",
      "[keyword export] [keyword interface] [def UserModel] [keyword extends]",
-     "  [variable-3 Sequelize].[variable-3 Model] [operator <] [variable-3 UserInstance], [variable-3 UserAttributes] [operator >] {",
+     "  [variable-3 Sequelize].[variable-3 Model] [operator <] [variable-3 DataInstance], [variable-3 DataAttributes] [operator >] {",
      "    [property findById]: (",
      "    [variable userId]: [variable-3 number]",
      "    ) [operator =>] [variable-3 Promise] [operator <] [variable-3 Array] [operator <] { [property id], [property name] } [operator >>];",
@@ -274,11 +274,11 @@
      "} [operator =] {};")
 
   TS("typescript_double_extend",
-     "[keyword export] [keyword interface] [def UserAttributes] {",
+     "[keyword export] [keyword interface] [def DataAttributes] {",
      "  [property id][operator ?]: [variable-3 number];",
      "  [property createdAt][operator ?]: [variable-3 Date];",
      "}",
-     "[keyword export] [keyword interface] [def UserInstance] [keyword extends] [variable-3 Sequelize].[variable-3 Instance][operator <][variable-3 UserAttributes][operator >], [variable-3 UserAttributes] {",
+     "[keyword export] [keyword interface] [def DataInstance] [keyword extends] [variable-3 Sequelize].[variable-3 Instance][operator <][variable-3 DataAttributes][operator >], [variable-3 DataAttributes] {",
      "  [property id]: [variable-3 number];",
      "  [property createdAt]: [variable-3 Date];",
      "}");
