@@ -1,5 +1,4 @@
 import * as express from "express";
-import {Server} from "../Server";
 import {Application} from "../Application";
 
 export abstract class Route {
