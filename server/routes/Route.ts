@@ -1,12 +1,16 @@
 import * as express from "express";
+import {Server} from "../Server";
+import {Application} from "../Application";
 
 export abstract class Route {
 
     private router;
+    protected application: Application;
 
     abstract registerRoutes();
 
-    constructor() {
+    constructor(application: Application) {
+        this.application = application;
         this.router = express.Router();
         this.registerRoutes();
         return this.router;
