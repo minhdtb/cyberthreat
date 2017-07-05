@@ -22,7 +22,7 @@ function createColorRange(c1, c2) {
     }
 
     return colorList;
-};
+}
 
 $(document).ready(() => {
     const socket = new SocketService();
@@ -56,7 +56,6 @@ $(document).ready(() => {
         hoverOpacity: 0.7,
         enableZoom: false,
         showTooltip: true,
-        colors: {},
         normalizeFunction: 'polynomial',
         onLabelShow: function (event, label, code) {
 
