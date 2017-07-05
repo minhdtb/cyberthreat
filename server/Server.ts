@@ -5,7 +5,6 @@ import * as AMQP from  "amqplib";
 import {Message} from "../client/Message";
 import DataService from "./services/DataService";
 import * as winston from "winston";
-import * as moment from "moment";
 
 const EXCHANGE_NAME = 'message';
 
@@ -19,26 +18,12 @@ export class Server {
     private currentData: any;
     private appLogger: winston.LoggerInstance;
 
-    constructor(app: Application) {
+    constructor(app: Application, logger: winston.LoggerInstance) {
         this.application = app;
+        this.appLogger = logger;
         this.application.server = this;
         this.server = http.createServer(this.application.express);
         this.io = SocketIO(this.server);
-        this.appLogger = new winston.Logger({
-            transports: [
-                new (winston.transports.Console)(),
-                new (winston.transports.File)({
-                    filename: 'server.log',
-                    timestamp: function () {
-                        return moment(new Date()).format('YYYY-MM-DD HH:mm:ss.SSS');
-                    },
-                    humanReadableUnhandledException: true,
-                    maxsize: 1024 * 1024 * 10,
-                    maxFiles: 5,
-                    json: false
-                })
-            ]
-        });
 
         AMQP.connect('amqp://localhost')
             .then((connection) => {
@@ -109,8 +94,8 @@ export class Server {
 
     start() {
         this.server.listen(this.bindPort);
-        this.server.on('error', (error) => {
-            this.logger.error(error.message);
+        this.server.on('error', (error: any) => {
+            this.logger.error(error);
         });
 
         this.server.on('listening', () => {
