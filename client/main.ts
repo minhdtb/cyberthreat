@@ -38,7 +38,7 @@ $(document).ready(() => {
 
         function rotateColors() {
             let currentColor = colors[index];
-            object[message.location] = "rgb(" + currentColor.R + "," + currentColor.G + "," + currentColor.B + ")";
+            object[message.countryCode] = "rgb(" + currentColor.R + "," + currentColor.G + "," + currentColor.B + ")";
             element.vectorMap('set', 'colors', object);
             index++;
 

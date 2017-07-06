@@ -8,6 +8,8 @@ export interface DataAttributes {
     location?: string;
     remoteHost?: string;
     macAddress?: string;
+    regionCode?: string;
+    countryCode?: string;
 }
 
 export interface DataInstance extends Sequelize.Instance<DataAttributes> {
@@ -19,15 +21,19 @@ export interface DataInstance extends Sequelize.Instance<DataAttributes> {
     location?: string;
     remoteHost?: string;
     macAddress?: string;
+    regionCode?: string;
+    countryCode?: string;
 }
 
-const User = sequelize.define<DataInstance, DataAttributes>('Data', {
+const RawData = sequelize.define<DataInstance, DataAttributes>('Data', {
     name: Sequelize.STRING(255),
     domain: Sequelize.STRING(255),
-    publicIP: Sequelize.STRING(255),
+    publicIP: Sequelize.STRING(32),
     location: Sequelize.STRING(255),
     remoteHost: Sequelize.STRING(255),
-    macAddress: Sequelize.STRING(255)
+    macAddress: Sequelize.STRING(17),
+    regionCode: Sequelize.STRING(8),
+    countryCode: Sequelize.STRING(8)
 });
 
-export default User;
+export default RawData;

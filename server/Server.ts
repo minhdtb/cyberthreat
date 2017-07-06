@@ -42,12 +42,16 @@ export class Server {
                                             domain: values[1],
                                             publicIP: values[2],
                                             location: values[3],
-                                            macAddress: values[4]
+                                            macAddress: values[4],
+                                            regionCode: values[5],
+                                            countryCode: values[6]
                                         };
 
                                         this.sendBrowserMessage({
                                             id: 0,
                                             location: currentData.location,
+                                            regionCode: currentData.regionCode,
+                                            countryCode: currentData.countryCode,
                                             name: currentData.name
                                         });
                                     }
@@ -56,13 +60,15 @@ export class Server {
                                 channel.consume(queue.queue, (msg) => {
                                     if (config.save) {
                                         let values = msg.content.toString().split(',');
-                                        if (values.length === 5) {
+                                        if (values.length === 7) {
                                             let currentData = {
                                                 name: values[0],
                                                 domain: values[1],
                                                 publicIP: values[2],
                                                 location: values[3],
-                                                macAddress: values[4]
+                                                macAddress: values[4],
+                                                regionCode: values[5],
+                                                countryCode: values[6]
                                             };
 
                                             DataService.create(
@@ -70,7 +76,9 @@ export class Server {
                                                 currentData.domain,
                                                 currentData.publicIP,
                                                 currentData.location,
-                                                currentData.macAddress)
+                                                currentData.macAddress,
+                                                currentData.regionCode,
+                                                currentData.countryCode)
                                                 .then(() => {
 
                                                 })
