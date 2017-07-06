@@ -5,7 +5,7 @@ import * as AMQP from  "amqplib";
 import {Message} from "../client/Message";
 import DataService from "./services/DataService";
 import * as winston from "winston";
-
+const config = require('../../config.json');
 const EXCHANGE_NAME = 'message';
 
 export class Server {
@@ -15,7 +15,6 @@ export class Server {
     private server: http.Server;
     private bindPort: Number;
 
-    private currentData: any;
     private appLogger: winston.LoggerInstance;
 
     constructor(app: Application, logger: winston.LoggerInstance) {
@@ -38,7 +37,7 @@ export class Server {
                                 channel.consume(queue.queue, (msg) => {
                                     let values = msg.content.toString().split(',');
                                     if (values.length === 5) {
-                                        this.currentData = {
+                                        let currentData = {
                                             name: values[0],
                                             domain: values[1],
                                             publicIP: values[2],
@@ -46,22 +45,39 @@ export class Server {
                                             macAddress: values[4]
                                         };
 
-                                        DataService.create(
-                                            this.currentData.name,
-                                            this.currentData.domain,
-                                            this.currentData.publicIP,
-                                            this.currentData.location,
-                                            this.currentData.macAddress)
-                                            .then(() => {
-                                                this.sendBrowserMessage({
-                                                    id: this.currentData.macAddress,
-                                                    location: this.currentData.location,
-                                                    name: this.currentData.name
+                                        this.sendBrowserMessage({
+                                            id: 0,
+                                            location: currentData.location,
+                                            name: currentData.name
+                                        });
+                                    }
+                                }, {noAck: true});
+
+                                channel.consume(queue.queue, (msg) => {
+                                    if (config.save) {
+                                        let values = msg.content.toString().split(',');
+                                        if (values.length === 5) {
+                                            let currentData = {
+                                                name: values[0],
+                                                domain: values[1],
+                                                publicIP: values[2],
+                                                location: values[3],
+                                                macAddress: values[4]
+                                            };
+
+                                            DataService.create(
+                                                currentData.name,
+                                                currentData.domain,
+                                                currentData.publicIP,
+                                                currentData.location,
+                                                currentData.macAddress)
+                                                .then(() => {
+
+                                                })
+                                                .catch((error) => {
+                                                    this.logger.error(error);
                                                 });
-                                            })
-                                            .catch((error) => {
-                                                this.logger.error(error);
-                                            });
+                                        }
                                     }
                                 }, {noAck: true});
                             })

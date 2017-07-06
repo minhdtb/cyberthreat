@@ -3,5 +3,6 @@
     "dbname": "cmccyber",
     "dbuser": "root",
     "dbpassword": ""
-  }
+  },
+  "save" : false
 }
