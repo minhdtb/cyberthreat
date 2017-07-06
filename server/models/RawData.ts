@@ -34,6 +34,8 @@ const RawData = sequelize.define<DataInstance, DataAttributes>('Data', {
     macAddress: Sequelize.STRING(17),
     regionCode: Sequelize.STRING(8),
     countryCode: Sequelize.STRING(8)
+}, {
+    tableName: 'raw_data'
 });
 
 export default RawData;

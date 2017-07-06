@@ -4,5 +4,5 @@
     "dbuser": "root",
     "dbpassword": ""
   },
-  "save" : false
+  "save" : true
 }

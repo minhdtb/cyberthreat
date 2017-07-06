@@ -8,6 +8,16 @@ import * as winston from "winston";
 const config = require('../../config.json');
 const EXCHANGE_NAME = 'message';
 
+class RData {
+    name: string;
+    domain: string;
+    publicIP: string;
+    location: string;
+    macAddress: string;
+    regionCode: string;
+    countryCode: string;
+}
+
 export class Server {
 
     private io: any;
@@ -97,6 +107,10 @@ export class Server {
                         this.logger.error(error);
                     });
             });
+    }
+
+    private getRawData(msg) {
+
     }
 
     get port(): Number {

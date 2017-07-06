@@ -5,6 +5,7 @@ export default class DataService {
                   domain: string,
                   publicIP: string,
                   location: string,
+                  remoteHost: string,
                   macAddress: string,
                   regionCode: string,
                   countryCode: string) {
@@ -13,6 +14,7 @@ export default class DataService {
             domain: domain,
             publicIP: publicIP,
             location: location,
+            remoteHost: remoteHost,
             macAddress: macAddress,
             regionCode: regionCode,
             countryCode: countryCode
