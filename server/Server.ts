@@ -36,7 +36,7 @@ export class Server {
 
                                 channel.consume(queue.queue, (msg) => {
                                     let values = msg.content.toString().split(',');
-                                    if (values.length === 5) {
+                                    if (values.length === 7) {
                                         let currentData = {
                                             name: values[0],
                                             domain: values[1],

@@ -43,7 +43,7 @@ $(document).ready(() => {
             index++;
 
             if (index < colors.length)
-                setTimeout(rotateColors, 1);
+                setTimeout(rotateColors, 5);
         }
 
         rotateColors();
