@@ -201,7 +201,7 @@ amqp.connect('amqp://localhost', function (err, conn) {
 
         function publish() {
             var index = getRandomInt(0, keys.length - 1);
-            var msg = process.argv.slice(2).join(' ') || 'testName,testDomain,testIP,testLocation,testMac,testRegion,' + keys[index];
+            var msg = process.argv.slice(2).join(' ') || 'testName,testDomain,testIP,testLocation,testRemote,testMac,testRegion,' + keys[index];
             ch.publish(ex, '', new Buffer(msg));
             console.log(" [x] Sent %s", msg);
             setTimeout(publish, 10);

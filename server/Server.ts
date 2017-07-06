@@ -1,21 +1,22 @@
 import * as http from "http";
 import {Application} from "./Application";
 import * as SocketIO from "socket.io";
-import * as AMQP from  "amqplib";
+import * as AMQP from "amqplib";
 import {Message} from "../client/Message";
-import DataService from "./services/DataService";
+import RawDataService from "./services/RawDataService";
 import * as winston from "winston";
 const config = require('../../config.json');
 const EXCHANGE_NAME = 'message';
 
 class RData {
-    name: string;
-    domain: string;
-    publicIP: string;
-    location: string;
-    macAddress: string;
-    regionCode: string;
-    countryCode: string;
+    public name: string;
+    public domain: string;
+    public publicIP: string;
+    public location: string;
+    public remoteHost: string;
+    public macAddress: string;
+    public regionCode: string;
+    public countryCode: string;
 }
 
 export class Server {
@@ -45,18 +46,8 @@ export class Server {
                                 channel.bindQueue(queue.queue, EXCHANGE_NAME, '');
 
                                 channel.consume(queue.queue, (msg) => {
-                                    let values = msg.content.toString().split(',');
-                                    if (values.length === 7) {
-                                        let currentData = {
-                                            name: values[0],
-                                            domain: values[1],
-                                            publicIP: values[2],
-                                            location: values[3],
-                                            macAddress: values[4],
-                                            regionCode: values[5],
-                                            countryCode: values[6]
-                                        };
-
+                                    let currentData = Server.getRawData(msg);
+                                    if (currentData) {
                                         this.sendBrowserMessage({
                                             id: 0,
                                             location: currentData.location,
@@ -69,28 +60,18 @@ export class Server {
 
                                 channel.consume(queue.queue, (msg) => {
                                     if (config.save) {
-                                        let values = msg.content.toString().split(',');
-                                        if (values.length === 7) {
-                                            let currentData = {
-                                                name: values[0],
-                                                domain: values[1],
-                                                publicIP: values[2],
-                                                location: values[3],
-                                                macAddress: values[4],
-                                                regionCode: values[5],
-                                                countryCode: values[6]
-                                            };
-
-                                            DataService.create(
+                                        let currentData = Server.getRawData(msg);
+                                        if (currentData) {
+                                            RawDataService.create(
                                                 currentData.name,
                                                 currentData.domain,
                                                 currentData.publicIP,
                                                 currentData.location,
+                                                currentData.remoteHost,
                                                 currentData.macAddress,
                                                 currentData.regionCode,
                                                 currentData.countryCode)
                                                 .then(() => {
-
                                                 })
                                                 .catch((error) => {
                                                     this.logger.error(error);
@@ -109,8 +90,22 @@ export class Server {
             });
     }
 
-    private getRawData(msg) {
+    private static getRawData(msg): RData {
+        let values = msg.content.toString().split(',');
+        if (values.length === 8) {
+            return {
+                name: values[0],
+                domain: values[1],
+                publicIP: values[2],
+                location: values[3],
+                remoteHost: values[4],
+                macAddress: values[5],
+                regionCode: values[6],
+                countryCode: values[7]
+            }
+        }
 
+        return null;
     }
 
     get port(): Number {

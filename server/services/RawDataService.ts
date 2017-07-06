@@ -1,6 +1,6 @@
 import RawData from "../models/RawData";
 
-export default class DataService {
+export default class RawDataService {
     static create(name: string,
                   domain: string,
                   publicIP: string,
