@@ -3,7 +3,7 @@ import {Application} from "./Application";
 import * as SocketIO from "socket.io";
 import * as AMQP from "amqplib";
 import {Message} from "../client/Message";
-import RawDataService from "./services/RawDataService";
+import DataService from "./services/DataService";
 import * as winston from "winston";
 const config = require('../../config.json');
 const EXCHANGE_NAME = 'message';
@@ -62,7 +62,7 @@ export class Server {
                                     if (config.save) {
                                         let currentData = Server.getRawData(msg);
                                         if (currentData) {
-                                            RawDataService.create(
+                                            DataService.insertRawData(
                                                 currentData.name,
                                                 currentData.domain,
                                                 currentData.publicIP,

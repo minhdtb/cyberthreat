@@ -1,7 +1,7 @@
 import * as Sequelize from "sequelize";
 import sequelize from "./Connection";
 
-export interface DataAttributes {
+export interface RawDataAttributes {
     name?: string;
     domain?: string;
     publicIP?: string;
@@ -12,7 +12,7 @@ export interface DataAttributes {
     countryCode?: string;
 }
 
-export interface DataInstance extends Sequelize.Instance<DataAttributes> {
+export interface RawDataInstance extends Sequelize.Instance<RawDataAttributes> {
     createdAt: Date
     updatedAt: Date
     name?: string;
@@ -25,7 +25,7 @@ export interface DataInstance extends Sequelize.Instance<DataAttributes> {
     countryCode?: string;
 }
 
-const RawData = sequelize.define<DataInstance, DataAttributes>('Data', {
+const RawData = sequelize.define<RawDataInstance, RawDataAttributes>('RawData', {
     name: Sequelize.STRING(255),
     domain: Sequelize.STRING(255),
     publicIP: Sequelize.STRING(32),
