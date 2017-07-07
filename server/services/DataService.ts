@@ -2,7 +2,7 @@ import {IPool} from "mysql";
 const config = require('../../../config.json');
 import * as mysql from "mysql";
 import * as SQLBuilder from "squel";
-
+import * as moment from "moment";
 const DB_PREFIX = 'cmc';
 
 export default class DataService {
@@ -52,6 +52,7 @@ export default class DataService {
                     .set('macAddress', macAddress)
                     .set('regionCode', regionCode)
                     .set('countryCode', countryCode)
+                    .set('createdDate', moment(new Date()).format('YYYY-MM-DD HH:mm:ss'))
                     .toString();
 
                 connection.query(query, (error, results) => {
