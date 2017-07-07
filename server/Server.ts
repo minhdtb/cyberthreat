@@ -62,7 +62,7 @@ export class Server {
                                     if (config.save) {
                                         let currentData = Server.getRawData(msg);
                                         if (currentData) {
-                                            DataService.insertRawData(
+                                            DataService.getInstance().insertRawData(
                                                 currentData.name,
                                                 currentData.domain,
                                                 currentData.publicIP,

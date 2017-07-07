@@ -1,5 +1,6 @@
 {
   "database": {
+    "dbhost": "localhost",
     "dbname": "cmccyber",
     "dbuser": "root",
     "dbpassword": ""

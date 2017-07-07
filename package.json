@@ -25,7 +25,7 @@
     "@types/moment": "^2.13.0",
     "@types/mongoose": "^4.7.12",
     "@types/morgan": "^1.7.32",
-    "@types/sequelize": "^4.0.58",
+    "@types/mysql": "0.0.34",
     "@types/socket.io": "^1.4.29",
     "@types/socket.io-client": "^1.4.29",
     "@types/winston": "^2.3.3",
@@ -58,13 +58,13 @@
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
-    "mongoose": "^4.9.10",
     "morgan": "^1.8.1",
     "mysql": "^2.13.0",
     "rxjs": "^5.4.1",
     "sequelize": "^3.30.4",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.2",
+    "squel": "^5.10.0",
     "winston": "^2.3.1"
   }
 }

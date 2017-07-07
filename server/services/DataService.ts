@@ -1,9 +1,34 @@
-import RawData from "../models/RawData";
-import MasterLocation from "../models/MasterLocation";
+import {IPool} from "mysql";
+const config = require('../../../config.json');
+import * as mysql from "mysql";
+import * as SQLBuilder from "squel";
+
+const DB_PREFIX = 'cmc';
 
 export default class DataService {
 
-    static insertRawData(name: string,
+    private static instance: DataService;
+    private connectionPool: IPool;
+
+    constructor() {
+        this.connectionPool = mysql.createPool({
+            connectionLimit: 10,
+            host: config.database.dbhost,
+            user: config.database.dbuser,
+            password: config.database.dbpassword,
+            database: config.database.dbname
+        })
+    }
+
+    static getInstance() {
+        if (!this.instance) {
+            this.instance = new DataService();
+        }
+
+        return this.instance;
+    }
+
+    public insertRawData(name: string,
                          domain: string,
                          publicIP: string,
                          location: string,
@@ -11,19 +36,36 @@ export default class DataService {
                          macAddress: string,
                          regionCode: string,
                          countryCode: string) {
-        return RawData.create({
-            name: name,
-            domain: domain,
-            publicIP: publicIP,
-            location: location,
-            remoteHost: remoteHost,
-            macAddress: macAddress,
-            regionCode: regionCode,
-            countryCode: countryCode
-        });
+        return new Promise((resolve, reject) => {
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                let query = SQLBuilder.insert()
+                    .into(DB_PREFIX + '_raw_data')
+                    .set('name', name)
+                    .set('domain', domain)
+                    .set('publicIP', publicIP)
+                    .set('location', location)
+                    .set('remoteHost', remoteHost)
+                    .set('macAddress', macAddress)
+                    .set('regionCode', regionCode)
+                    .set('countryCode', countryCode)
+                    .toString();
+
+                connection.query(query, (error, results) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(results);
+                });
+            });
+        })
     }
 
-    static ipToLong(ip: string): Number {
+    private static ipToLong(ip: string): Number {
         if (ip) {
             let values = ip.split('.');
             if (values.length === 4) {
@@ -35,25 +77,38 @@ export default class DataService {
         return 0;
     }
 
-    static getIpLocation(ip: string): any {
-        let ipLong = DataService.ipToLong(ip);
-
-        return MasterLocation.findOne({
-            attributes: [
-                ['country_code', 'countryCode'],
-                ['country_name', 'countryName'],
-                ['region_name', 'regionName'],
-                ['city_name', 'cityName'],
-                ['zip_code', 'zipCode']
-            ],
-            where: {
-                ip_to: {
-                    $gte: ipLong
-                },
-                ip_from: {
-                    $lte: ipLong
+    public getIpLocation(ip: string): any {
+        return new Promise((resolve, reject) => {
+            let ipLong = DataService.ipToLong(ip);
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
                 }
-            }
+
+                let query = SQLBuilder.select()
+                    .from(DB_PREFIX + '_master_location')
+                    .field(DB_PREFIX + '_master_location.country_code', 'countryCode')
+                    .field(DB_PREFIX + '_master_location.country_name', 'countryName')
+                    .field('region_code', 'regionCode')
+                    .field(DB_PREFIX + '_master_location.region_name', 'regionName')
+                    .field('city_name', 'cityName')
+                    .where('ip_from <= ?', ipLong)
+                    .where('ip_to >= ?', ipLong)
+                    .left_join(DB_PREFIX + '_master_region', null, DB_PREFIX + '_master_location.region_name = ' + DB_PREFIX +
+                        '_master_region.region_name')
+                    .toString();
+                
+                connection.query(query, (error, results) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    if (results.length > 0)
+                        return resolve(results[0]);
+
+                    resolve(null);
+                });
+            });
         });
     }
 }
