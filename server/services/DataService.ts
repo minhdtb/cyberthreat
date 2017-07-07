@@ -3,7 +3,13 @@ const config = require('../../../config.json');
 import * as mysql from "mysql";
 import * as SQLBuilder from "squel";
 import * as moment from "moment";
+
 const DB_PREFIX = 'cmc';
+
+const CMC_MASTER_LOCATION = DB_PREFIX + '_master_location';
+const CMC_MASTER_REGION = DB_PREFIX + '_master_region';
+const CMC_RAW_DATA = DB_PREFIX + '_raw_data';
+const CMC_BLACK_LIST = DB_PREFIX + '_black_list';
 
 export default class DataService {
 
@@ -43,7 +49,7 @@ export default class DataService {
                 }
 
                 let query = SQLBuilder.insert()
-                    .into(DB_PREFIX + '_raw_data')
+                    .into(CMC_RAW_DATA)
                     .set('name', name)
                     .set('domain', domain)
                     .set('publicIP', publicIP)
@@ -89,16 +95,16 @@ export default class DataService {
                 }
 
                 let query = SQLBuilder.select()
-                    .from(DB_PREFIX + '_master_location')
-                    .field(DB_PREFIX + '_master_location.country_code', 'countryCode')
-                    .field(DB_PREFIX + '_master_location.country_name', 'countryName')
+                    .from(CMC_MASTER_LOCATION)
+                    .field(CMC_MASTER_LOCATION + '.country_code', 'countryCode')
+                    .field(CMC_MASTER_LOCATION + '.country_name', 'countryName')
                     .field('region_code', 'regionCode')
-                    .field(DB_PREFIX + '_master_location.region_name', 'regionName')
+                    .field(CMC_MASTER_LOCATION + '.region_name', 'regionName')
                     .field('city_name', 'cityName')
                     .where('ip_from <= ?', ipLong)
                     .where('ip_to >= ?', ipLong)
-                    .left_join(DB_PREFIX + '_master_region', null, DB_PREFIX + '_master_location.region_name = ' + DB_PREFIX +
-                        '_master_region.region_name')
+                    .left_join(CMC_MASTER_REGION, null, CMC_MASTER_LOCATION + '.region_name = '
+                        + CMC_MASTER_REGION + '.region_name')
                     .toString();
 
                 connection.query(query, (error, results) => {
@@ -125,7 +131,7 @@ export default class DataService {
                 }
 
                 let query = SQLBuilder.select()
-                    .from(DB_PREFIX + '_black_list')
+                    .from(CMC_BLACK_LIST)
                     .where('remote_host = ?', remote)
                     .toString();
 
