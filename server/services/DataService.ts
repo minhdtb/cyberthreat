@@ -136,7 +136,7 @@ export default class DataService {
                     }
 
                     if (results.length > 0)
-                        return true;
+                        return resolve(true);
 
                     resolve(false);
                 });

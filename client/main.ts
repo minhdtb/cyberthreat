@@ -56,11 +56,11 @@ $(document).ready(() => {
     });
 
     socket.get('message').subscribe((message: Message) => {
-        objectTerminalDetect.echo('Malware detected - Name: ' + message.name);
+        objectTerminalDetect.echo(PROMPT + '[[b;green;]Malware Detected] - Name: [[b;red;]' + message.name + ']');
     });
 
     socket.get('blacklist').subscribe((message: Message) => {
-        objectTerminalBlackList.echo('Black list detected - Remote Host: ' + message.remoteHost);
+        objectTerminalBlackList.echo(PROMPT + '[[b;blue;]Black Host Detected] - Remote Host: [[b;red;]' + message.remoteHost + ']');
     });
 
     let options = {
@@ -85,6 +85,7 @@ $(document).ready(() => {
         height: 100,
         prompt: PROMPT
     });
+
 
     objectTerminalBlackList = terminalBlackList.terminal(function () {
 
