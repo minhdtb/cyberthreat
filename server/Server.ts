@@ -51,6 +51,7 @@ export class Server {
                                         this.sendBrowserMessage({
                                             id: 0,
                                             location: currentData.location,
+                                            remoteHost: currentData.remoteHost,
                                             regionCode: currentData.regionCode,
                                             countryCode: currentData.countryCode,
                                             name: currentData.name
@@ -77,6 +78,27 @@ export class Server {
                                                     this.logger.error(error);
                                                 });
                                         }
+                                    }
+                                }, {noAck: true});
+
+                                channel.consume(queue.queue, (msg) => {
+                                    let currentData = Server.getRawData(msg);
+                                    if (currentData) {
+                                        DataService.getInstance().checkBlackList(currentData.remoteHost)
+                                            .then((value) => {
+                                                if (value)
+                                                    this.sendBrowserBlackList({
+                                                        id: 0,
+                                                        location: currentData.location,
+                                                        remoteHost: currentData.remoteHost,
+                                                        regionCode: currentData.regionCode,
+                                                        countryCode: currentData.countryCode,
+                                                        name: currentData.name
+                                                    });
+                                            })
+                                            .catch((error) => {
+                                                this.logger.error(error);
+                                            });
                                     }
                                 }, {noAck: true});
                             })
@@ -123,6 +145,10 @@ export class Server {
 
     private sendBrowserMessage(message: Message) {
         this.io.sockets.emit('message', message);
+    }
+
+    private sendBrowserBlackList(message: Message) {
+        this.io.sockets.emit('blacklist', message);
     }
 
     start() {

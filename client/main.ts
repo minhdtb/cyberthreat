@@ -1,6 +1,8 @@
 import {SocketService} from "./SocketService";
 import {Message} from "./Message";
 
+const PROMPT = 'InfoSec> ';
+
 class RGBColor {
     constructor(public R: Number, public G: Number, public B: number) {
         if (typeof R === 'undefined')
@@ -26,20 +28,24 @@ function createColorRange(c1, c2) {
 
 $(document).ready(() => {
     const socket = new SocketService();
-    let element = $('#map-world');
+    let mapElement = $('#map-world');
+    let terminalLog = $('#terminal-1');
+    let terminalBlackList = $('#terminal-2');
+    let objectTerminalDetect: Terminal;
+    let objectTerminalBlackList: Terminal;
 
     let red = new RGBColor(255, 0, 0);
     let white = new RGBColor(255, 255, 255);
     let colors = createColorRange(red, white);
 
-    socket.get().subscribe((message: Message) => {
+    socket.get('message').subscribe((message: Message) => {
         let object = {};
         let index = 0;
 
         function rotateColors() {
             let currentColor = colors[index];
             object[message.countryCode] = "rgb(" + currentColor.R + "," + currentColor.G + "," + currentColor.B + ")";
-            element.vectorMap('set', 'colors', object);
+            mapElement.vectorMap('set', 'colors', object);
             index++;
 
             if (index < colors.length)
@@ -47,6 +53,14 @@ $(document).ready(() => {
         }
 
         rotateColors();
+    });
+
+    socket.get('message').subscribe((message: Message) => {
+        objectTerminalDetect.echo('Malware detected - Name: ' + message.name);
+    });
+
+    socket.get('blacklist').subscribe((message: Message) => {
+        objectTerminalBlackList.echo('Black list detected - Remote Host: ' + message.remoteHost);
     });
 
     let options = {
@@ -62,5 +76,21 @@ $(document).ready(() => {
         }
     };
 
-    element.vectorMap(options);
+    mapElement.vectorMap(options);
+
+    objectTerminalDetect = terminalLog.terminal(function () {
+
+    }, {
+        greetings: false,
+        height: 100,
+        prompt: PROMPT
+    });
+
+    objectTerminalBlackList = terminalBlackList.terminal(function () {
+
+    }, {
+        greetings: false,
+        height: 100,
+        prompt: PROMPT
+    });
 });

@@ -10,6 +10,14 @@ export default class DataService {
     private static instance: DataService;
     private connectionPool: IPool;
 
+    static getInstance() {
+        if (!this.instance) {
+            this.instance = new DataService();
+        }
+
+        return this.instance;
+    }
+
     constructor() {
         this.connectionPool = mysql.createPool({
             connectionLimit: 10,
@@ -18,14 +26,6 @@ export default class DataService {
             password: config.database.dbpassword,
             database: config.database.dbname
         })
-    }
-
-    static getInstance() {
-        if (!this.instance) {
-            this.instance = new DataService();
-        }
-
-        return this.instance;
     }
 
     public insertRawData(name: string,
@@ -55,6 +55,8 @@ export default class DataService {
                     .toString();
 
                 connection.query(query, (error, results) => {
+                    connection.release();
+
                     if (error) {
                         return reject(error);
                     }
@@ -97,8 +99,10 @@ export default class DataService {
                     .left_join(DB_PREFIX + '_master_region', null, DB_PREFIX + '_master_location.region_name = ' + DB_PREFIX +
                         '_master_region.region_name')
                     .toString();
-                
+
                 connection.query(query, (error, results) => {
+                    connection.release();
+
                     if (error) {
                         return reject(error);
                     }
@@ -107,6 +111,34 @@ export default class DataService {
                         return resolve(results[0]);
 
                     resolve(null);
+                });
+            });
+        });
+    }
+
+    public checkBlackList(remote: string) {
+        return new Promise((resolve, reject) => {
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                let query = SQLBuilder.select()
+                    .from(DB_PREFIX + '_black_list')
+                    .where('remote_host = ?', remote)
+                    .toString();
+
+                connection.query(query, (error, results) => {
+                    connection.release();
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    if (results.length > 0)
+                        return true;
+
+                    resolve(false);
                 });
             });
         });

@@ -26,6 +26,8 @@
     <link rel="stylesheet" href="/stylesheets/theme.css"/>
     <link rel="stylesheet" href="/stylesheets/skins/default.css"/>
     <link rel="stylesheet" href="/stylesheets/theme-custom.css">
+    <link href="/vendor/jquery.terminal/jquery.terminal.min.css"
+          rel="stylesheet"/>
 
     <script src="/vendor/modernizr/modernizr.js"></script>
 </head>
@@ -85,7 +87,37 @@
                     </section>
                 </div>
                 <div class="col-lg-8 col-md-12">
-                    <div id="map-world" style="height: 550px; width: 100%;"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="map-world" style="height: 450px; width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <section class="panel">
+                                <header class="panel-heading">
+                                    <div class="panel-actions">
+                                    </div>
+                                    <h2 class="panel-title"></h2>
+                                </header>
+                                <div class="panel-body">
+                                    <div id="terminal-1"></div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="col-md-6">
+                            <section class="panel">
+                                <header class="panel-heading">
+                                    <div class="panel-actions">
+                                    </div>
+                                    <h2 class="panel-title"></h2>
+                                </header>
+                                <div class="panel-body">
+                                    <div id="terminal-2"></div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <section class="panel panel-featured panel-featured-primary">
@@ -134,6 +166,7 @@
 <script src="/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 <script src="/vendor/magnific-popup/jquery.magnific-popup.js"></script>
 <script src="/vendor/jquery-placeholder/jquery-placeholder.js"></script>
+<script src="/vendor/jquery.terminal/jquery.terminal.js"></script>
 
 <!-- Specific Page Vendor -->
 <script src="/vendor/jquery-ui/jquery-ui.js"></script>

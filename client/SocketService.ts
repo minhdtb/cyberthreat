@@ -19,9 +19,9 @@ export class SocketService {
         this.socket.emit('message', message);
     }
 
-    public get() {
+    public get(queue) {
         return new Observable(observer => {
-            this.socket.on('message', (data) => {
+            this.socket.on(queue, (data) => {
                 observer.next(data);
             });
             return () => {
