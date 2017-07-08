@@ -3,7 +3,7 @@
     "dbhost": "localhost",
     "dbname": "cmccyber",
     "dbuser": "root",
-    "dbpassword": ""
+    "dbpassword": "123456"
   },
   "save" : true
 }

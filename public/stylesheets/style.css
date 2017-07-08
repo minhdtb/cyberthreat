@@ -1,8 +1,20 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    overflow: hidden;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.land {
+    fill: white;
+    fill-opacity: 1;
+    stroke: black;
+    stroke-opacity: 1;
+    stroke-width: 0.5;
 }
 
 a {
-  color: #00B7FF;
+    color: #00B7FF;
 }

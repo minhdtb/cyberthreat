@@ -1,5 +1,6 @@
 import {SocketService} from "./SocketService";
 import {Message} from "./Message";
+import * as d3 from "d3";
 
 const PROMPT = 'InfoSec> ';
 
@@ -28,7 +29,7 @@ function createColorRange(c1, c2) {
 
 $(document).ready(() => {
     const socket = new SocketService();
-    let mapElement = $('#map-world');
+
     let terminalLog = $('#terminal-1');
     let terminalBlackList = $('#terminal-2');
     let objectTerminalDetect: Terminal;
@@ -39,17 +40,29 @@ $(document).ready(() => {
     let colors = createColorRange(red, white);
 
     socket.get('message').subscribe((message: Message) => {
-        let object = {};
+        let objectCountry = d3.select('#map-world')
+            .select('#' + message.countryCode.toUpperCase());
+
+        let objectVietNamRegion = null;
+        if (message.countryCode === 'vn') {
+            objectVietNamRegion = d3.select('#map-viet-nam')
+                .select('#VN-' + message.regionCode.toUpperCase());
+        }
+
         let index = 0;
 
         function rotateColors() {
             let currentColor = colors[index];
-            object[message.countryCode] = "rgb(" + currentColor.R + "," + currentColor.G + "," + currentColor.B + ")";
-            mapElement.vectorMap('set', 'colors', object);
-            index++;
+            let color = "rgb(" + currentColor.R + "," + currentColor.G + "," + currentColor.B + ")";
 
+            objectCountry.style('fill', color);
+            if (objectVietNamRegion) {
+                objectVietNamRegion.style('fill', color);
+            }
+
+            index++;
             if (index < colors.length)
-                setTimeout(rotateColors, 5);
+                setTimeout(rotateColors, 10);
         }
 
         rotateColors();
@@ -63,35 +76,26 @@ $(document).ready(() => {
         objectTerminalBlackList.echo(PROMPT + '[[b;blue;]Black Host Detected] - Remote Host: [[b;red;]' + message.remoteHost + ']');
     });
 
-    let options = {
-        map: 'world_en',
-        backgroundColor: null,
-        color: '#ffffff',
-        hoverOpacity: 0.7,
-        enableZoom: false,
-        showTooltip: true,
-        normalizeFunction: 'polynomial',
-        onLabelShow: function (event, label, code) {
-
-        }
-    };
-
-    mapElement.vectorMap(options);
-
     objectTerminalDetect = terminalLog.terminal(function () {
-
     }, {
         greetings: false,
         height: 100,
         prompt: PROMPT
     });
-
 
     objectTerminalBlackList = terminalBlackList.terminal(function () {
-
     }, {
         greetings: false,
         height: 100,
         prompt: PROMPT
     });
+
+    d3.selectAll('path')
+        .on('mouseover', function () {
+            d3.select(this).style('fill', '#8492a3');
+        });
+    d3.selectAll('path')
+        .on('mouseleave', function () {
+            d3.select(this).style('fill', 'white');
+        });
 });
