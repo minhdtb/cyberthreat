@@ -57,7 +57,66 @@ export class Server {
                                             name: currentData.name
                                         });
                                     }
-                                }, {noAck: true});
+                                });
+                            })
+                            .catch((error) => {
+                                this.logger.error(error);
+                            });
+                    })
+                    .catch((error) => {
+                        this.logger.error(error);
+                    });
+            });
+
+        AMQP.connect('amqp://localhost')
+            .then((connection) => {
+                connection
+                    .createChannel()
+                    .then((channel) => {
+                        channel.assertExchange(EXCHANGE_NAME, 'fanout', {durable: false});
+                        channel.assertQueue('', {exclusive: true})
+                            .then((queue) => {
+                                channel.bindQueue(queue.queue, EXCHANGE_NAME, '');
+
+                                channel.consume(queue.queue, (msg) => {
+                                    let currentData = Server.getRawData(msg);
+                                    if (currentData) {
+                                        DataService.getInstance().checkBlackList(currentData.remoteHost)
+                                            .then((value) => {
+                                                if (value)
+                                                    this.sendBrowserBlackList({
+                                                        id: 0,
+                                                        location: currentData.location,
+                                                        remoteHost: currentData.remoteHost,
+                                                        regionCode: currentData.regionCode,
+                                                        countryCode: currentData.countryCode,
+                                                        name: currentData.name
+                                                    });
+                                            })
+                                            .catch((error) => {
+                                                this.logger.error(error);
+                                            });
+                                    }
+                                });
+                            })
+                            .catch((error) => {
+                                this.logger.error(error);
+                            });
+                    })
+                    .catch((error) => {
+                        this.logger.error(error);
+                    });
+            });
+
+        AMQP.connect('amqp://localhost')
+            .then((connection) => {
+                connection
+                    .createChannel()
+                    .then((channel) => {
+                        channel.assertExchange(EXCHANGE_NAME, 'fanout', {durable: false});
+                        channel.assertQueue('', {exclusive: true})
+                            .then((queue) => {
+                                channel.bindQueue(queue.queue, EXCHANGE_NAME, '');
 
                                 channel.consume(queue.queue, (msg) => {
                                     if (config.save) {
@@ -79,28 +138,7 @@ export class Server {
                                                 });
                                         }
                                     }
-                                }, {noAck: true});
-
-                                channel.consume(queue.queue, (msg) => {
-                                    let currentData = Server.getRawData(msg);
-                                    if (currentData) {
-                                        DataService.getInstance().checkBlackList(currentData.remoteHost)
-                                            .then((value) => {
-                                                if (value)
-                                                    this.sendBrowserBlackList({
-                                                        id: 0,
-                                                        location: currentData.location,
-                                                        remoteHost: currentData.remoteHost,
-                                                        regionCode: currentData.regionCode,
-                                                        countryCode: currentData.countryCode,
-                                                        name: currentData.name
-                                                    });
-                                            })
-                                            .catch((error) => {
-                                                this.logger.error(error);
-                                            });
-                                    }
-                                }, {noAck: true});
+                                });
                             })
                             .catch((error) => {
                                 this.logger.error(error);
@@ -113,21 +151,7 @@ export class Server {
     }
 
     private static getRawData(msg): RData {
-        let values = msg.content.toString().split(',');
-        if (values.length === 8) {
-            return {
-                name: values[0],
-                domain: values[1],
-                publicIP: values[2],
-                location: values[3],
-                remoteHost: values[4],
-                macAddress: values[5],
-                regionCode: values[6],
-                countryCode: values[7]
-            }
-        }
-
-        return null;
+        return JSON.parse(msg.content.toString());
     }
 
     get port(): Number {

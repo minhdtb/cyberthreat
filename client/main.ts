@@ -92,7 +92,7 @@ $(document).ready(() => {
 
     d3.selectAll('path')
         .on('mouseover', function () {
-            d3.select(this).style('fill', '#8492a3');
+            d3.select(this).style('fill', '#ccc');
         });
     d3.selectAll('path')
         .on('mouseleave', function () {
