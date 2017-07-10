@@ -1,6 +1,7 @@
 import {SocketService} from "./SocketService";
 import {Message} from "./Message";
 import * as d3 from "d3";
+import * as _ from "lodash";
 
 const PROMPT = 'InfoSec> ';
 
@@ -87,8 +88,111 @@ $(document).ready(() => {
         .on('mouseover', function () {
             d3.select(this).style('fill', '#ccc');
         });
+
     d3.selectAll('path')
         .on('mouseleave', function () {
             d3.select(this).style('fill', 'white');
         });
+
+    let popup = $('#popup');
+
+    let badgeMalware = $('.badge.malware');
+    badgeMalware.on('mouseenter', event => {
+        event.preventDefault();
+        popup.css('left', $(event.target).offset().left + 50);
+        popup.css('top', $(event.target).offset().top);
+        let name = $(event.target).data('name');
+        let content = $('#content');
+        content.html('');
+        $.get('/api/get-region?name=' + name, (data) => {
+            _.each(data, function (item, i) {
+                let tr = $('<tr>');
+                let td = $('<td>').text(i + 1);
+                tr.append(td);
+
+                td = $('<td>').append($('<span>').attr('class', 'flag-icon flag-icon-' + item.countryCode));
+                tr.append(td);
+
+                td = $('<td>').text(item.regionCode);
+                tr.append(td);
+
+                td = $('<td>').append($('<span>').attr('class', 'badge label-danger').text(item.count));
+                tr.append(td);
+
+                content.append(tr);
+            });
+
+            popup.show();
+        });
+    });
+
+    badgeMalware.on('mouseleave', event => {
+        event.preventDefault();
+        popup.hide();
+    });
+
+    let badgeRemote = $('.badge.remote');
+    badgeRemote.on('mouseenter', event => {
+        event.preventDefault();
+        popup.css('left', $(event.target).offset().left + 50);
+        popup.css('top', $(event.target).offset().top);
+        let remoteHost = $(event.target).data('host');
+        let content = $('#content');
+        content.html('');
+        $.get('/api/get-malware-remote?remoteHost=' + remoteHost, (data) => {
+            _.each(data, function (item, i) {
+                let tr = $('<tr>');
+                let td = $('<td>').text(i + 1);
+                tr.append(td);
+
+                td = $('<td>').text(item.name);
+                tr.append(td);
+
+                td = $('<td>').append($('<span>').attr('class', 'badge label-danger').text(item.count));
+                tr.append(td);
+
+                content.append(tr);
+            });
+
+            popup.show();
+        });
+    });
+
+    badgeRemote.on('mouseleave', event => {
+        event.preventDefault();
+        popup.hide();
+    });
+
+    let badgeRegion = $('.badge.region');
+    badgeRegion.on('mouseenter', event => {
+        event.preventDefault();
+        let countryCode = $(event.target).data('country-code');
+        let regionCode = $(event.target).data('region-code');
+        let content = $('#content');
+        content.html('');
+        $.get('/api/get-malware-region?countryCode=' + countryCode + '&regionCode=' + regionCode, (data) => {
+            _.each(data, function (item, i) {
+                let tr = $('<tr>');
+                let td = $('<td>').text(i + 1);
+                tr.append(td);
+
+                td = $('<td>').text(item.name);
+                tr.append(td);
+
+                td = $('<td>').append($('<span>').attr('class', 'badge label-danger').text(item.count));
+                tr.append(td);
+
+                content.append(tr);
+            });
+
+            popup.css('left', $(event.target).offset().left - popup.width());
+            popup.css('top', $(event.target).offset().top);
+            popup.show();
+        });
+    });
+
+    badgeRegion.on('mouseleave', event => {
+        event.preventDefault();
+        popup.hide();
+    });
 });
