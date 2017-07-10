@@ -30,10 +30,8 @@ function createColorRange(c1, c2) {
 $(document).ready(() => {
     const socket = new SocketService();
 
-    let terminalLog = $('#terminal-1');
-    let terminalBlackList = $('#terminal-2');
-    let objectTerminalDetect: Terminal;
-    let objectTerminalBlackList: Terminal;
+    let terminalLog = $('#terminal');
+    let terminal: Terminal;
 
     let red = new RGBColor(255, 0, 0);
     let white = new RGBColor(255, 255, 255);
@@ -69,21 +67,16 @@ $(document).ready(() => {
     });
 
     socket.get('message').subscribe((message: Message) => {
-        objectTerminalDetect.echo(PROMPT + '[[b;green;]Malware Detected] - Name: [[b;red;]' + message.name + ']');
+        terminal.echo(PROMPT + '[[b;green;]Malware Detected] - Name: [[b;red;]' + message.name + ']');
     });
 
     socket.get('blacklist').subscribe((message: Message) => {
-        objectTerminalBlackList.echo(PROMPT + '[[b;blue;]Black Host Detected] - Remote Host: [[b;red;]' + message.remoteHost + ']');
+        terminal.echo(PROMPT + '[[b;blue;]Black Host Detected] - Remote Host: [[b;red;]' + message.remoteHost + ']');
     });
 
-    objectTerminalDetect = terminalLog.terminal(function () {
-    }, {
-        greetings: false,
-        height: 100,
-        prompt: PROMPT
-    });
+    $('#console').draggable();
 
-    objectTerminalBlackList = terminalBlackList.terminal(function () {
+    terminal = terminalLog.terminal(function () {
     }, {
         greetings: false,
         height: 100,

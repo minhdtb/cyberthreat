@@ -151,7 +151,7 @@ export default class DataService {
         });
     }
 
-    public getTopMalware() {
+    public getTopMalware(countryCode?: string, regionCode?: string, remoteHost?: string) {
         return new Promise((resolve, reject) => {
             this.connectionPool.getConnection((error, connection) => {
                 if (error) {
@@ -161,16 +161,46 @@ export default class DataService {
                 let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
                 let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
 
-                let query = SQLBuilder.select()
-                    .from(CMC_RAW_DATA)
-                    .field('name')
-                    .field('COUNT(name)', 'count')
-                    .group('name')
-                    .where('createdDate >= ?', lastDay)
-                    .where('createdDate <= ?', toDay)
-                    .order('count', false)
-                    .limit(10)
-                    .toString();
+                let query = '';
+                if (countryCode && regionCode) {
+                    query = SQLBuilder.select()
+                        .from(CMC_RAW_DATA)
+                        .field('name')
+                        .field('COUNT(name)', 'count')
+                        .group('name')
+                        .where('createdDate >= ?', lastDay)
+                        .where('createdDate <= ?', toDay)
+                        .where('countryCode = ?', countryCode)
+                        .where('regionCode = ?', regionCode)
+                        .order('count', false)
+                        .limit(10)
+                        .toString();
+                }
+                else if (remoteHost) {
+                    query = SQLBuilder.select()
+                        .from(CMC_RAW_DATA)
+                        .field('name')
+                        .field('COUNT(name)', 'count')
+                        .group('name')
+                        .where('createdDate >= ?', lastDay)
+                        .where('createdDate <= ?', toDay)
+                        .where('remoteHost = ?', remoteHost)
+                        .order('count', false)
+                        .limit(10)
+                        .toString();
+                }
+                else {
+                    query = SQLBuilder.select()
+                        .from(CMC_RAW_DATA)
+                        .field('name')
+                        .field('COUNT(name)', 'count')
+                        .group('name')
+                        .where('createdDate >= ?', lastDay)
+                        .where('createdDate <= ?', toDay)
+                        .order('count', false)
+                        .limit(10)
+                        .toString();
+                }
 
                 connection.query(query, (error, results) => {
                     connection.release();
@@ -185,7 +215,7 @@ export default class DataService {
         })
     }
 
-    public getTopRegion() {
+    public getTopRegion(name?: string) {
         return new Promise((resolve, reject) => {
             this.connectionPool.getConnection((error, connection) => {
                 if (error) {
@@ -195,18 +225,35 @@ export default class DataService {
                 let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
                 let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
 
-                let query = SQLBuilder.select()
-                    .from(CMC_RAW_DATA)
-                    .field('countryCode')
-                    .field('regionCode')
-                    .field('COUNT(*)', 'count')
-                    .group('regionCode')
-                    .group('countryCode')
-                    .where('createdDate >= ?', lastDay)
-                    .where('createdDate <= ?', toDay)
-                    .order('count', false)
-                    .limit(10)
-                    .toString();
+                let query = '';
+                if (name) {
+                    query = SQLBuilder.select()
+                        .from(CMC_RAW_DATA)
+                        .field('countryCode')
+                        .field('regionCode')
+                        .field('COUNT(*)', 'count')
+                        .group('regionCode')
+                        .group('countryCode')
+                        .where('createdDate >= ?', lastDay)
+                        .where('createdDate <= ?', toDay)
+                        .where('name = ?', name)
+                        .order('count', false)
+                        .limit(10)
+                        .toString();
+                } else {
+                    query = SQLBuilder.select()
+                        .from(CMC_RAW_DATA)
+                        .field('countryCode')
+                        .field('regionCode')
+                        .field('COUNT(*)', 'count')
+                        .group('regionCode')
+                        .group('countryCode')
+                        .where('createdDate >= ?', lastDay)
+                        .where('createdDate <= ?', toDay)
+                        .order('count', false)
+                        .limit(10)
+                        .toString();
+                }
 
                 connection.query(query, (error, results) => {
                     connection.release();

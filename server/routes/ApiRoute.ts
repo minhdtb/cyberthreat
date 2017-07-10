@@ -16,5 +16,33 @@ export class ApiRoute extends Route {
                     res.send(result);
                 });
         });
+
+        this._get('/api/get-region', (req: express.Request, res: express.Response) => {
+            let malwareName = req.query.name;
+
+            DataService.getInstance().getTopRegion(malwareName)
+                .then(value => {
+                    res.send(value);
+                });
+        });
+
+        this._get('/api/get-malware-region', (req: express.Request, res: express.Response) => {
+            let countryCode = req.query.countryCode;
+            let regionCode = req.query.regionCode;
+
+            DataService.getInstance().getTopMalware(countryCode, regionCode)
+                .then(value => {
+                    res.send(value);
+                })
+        });
+
+        this._get('/api/get-malware-remote', (req: express.Request, res: express.Response) => {
+            let remoteHost = req.query.remoteHost;
+
+            DataService.getInstance().getTopMalware(null, null, remoteHost)
+                .then(value => {
+                    res.send(value);
+                })
+        });
     }
 }
