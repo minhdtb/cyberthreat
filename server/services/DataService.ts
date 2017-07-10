@@ -150,4 +150,108 @@ export default class DataService {
             });
         });
     }
+
+    public getTopMalware() {
+        return new Promise((resolve, reject) => {
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
+
+                let query = SQLBuilder.select()
+                    .from(CMC_RAW_DATA)
+                    .field('name')
+                    .field('COUNT(name)', 'count')
+                    .group('name')
+                    .where('createdDate >= ?', lastDay)
+                    .where('createdDate <= ?', toDay)
+                    .order('count', false)
+                    .limit(10)
+                    .toString();
+
+                connection.query(query, (error, results) => {
+                    connection.release();
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(results);
+                });
+            });
+        })
+    }
+
+    public getTopRegion() {
+        return new Promise((resolve, reject) => {
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
+
+                let query = SQLBuilder.select()
+                    .from(CMC_RAW_DATA)
+                    .field('countryCode')
+                    .field('regionCode')
+                    .field('COUNT(*)', 'count')
+                    .group('regionCode')
+                    .group('countryCode')
+                    .where('createdDate >= ?', lastDay)
+                    .where('createdDate <= ?', toDay)
+                    .order('count', false)
+                    .limit(10)
+                    .toString();
+
+                connection.query(query, (error, results) => {
+                    connection.release();
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(results);
+                });
+            });
+        })
+    }
+
+    public getTopRemote() {
+        return new Promise((resolve, reject) => {
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
+
+                let query = SQLBuilder.select()
+                    .from(CMC_RAW_DATA)
+                    .field('remoteHost')
+                    .field('COUNT(*)', 'count')
+                    .group('remoteHost')
+                    .where('createdDate >= ?', lastDay)
+                    .where('createdDate <= ?', toDay)
+                    .order('count', false)
+                    .limit(10)
+                    .toString();
+
+                connection.query(query, (error, results) => {
+                    connection.release();
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(results);
+                });
+            });
+        })
+    }
 }
