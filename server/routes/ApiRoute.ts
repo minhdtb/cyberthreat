@@ -14,6 +14,10 @@ export class ApiRoute extends Route {
             DataService.getInstance().getIpLocation(ip)
                 .then((result) => {
                     res.send(result);
+                })
+                .catch(error => {
+                    res.status(500);
+                    res.send(error);
                 });
         });
 
@@ -23,6 +27,10 @@ export class ApiRoute extends Route {
             DataService.getInstance().getTopRegion(malwareName)
                 .then(value => {
                     res.send(value);
+                })
+                .catch(error => {
+                    res.status(500);
+                    res.send(error);
                 });
         });
 
@@ -34,6 +42,10 @@ export class ApiRoute extends Route {
                 .then(value => {
                     res.send(value);
                 })
+                .catch(error => {
+                    res.status(500);
+                    res.send(error);
+                });
         });
 
         this._get('/api/get-malware-remote', (req: express.Request, res: express.Response) => {
@@ -43,6 +55,10 @@ export class ApiRoute extends Route {
                 .then(value => {
                     res.send(value);
                 })
+                .catch(error => {
+                    res.status(500);
+                    res.send(error);
+                });
         });
     }
 }

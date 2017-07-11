@@ -36,8 +36,18 @@ export class IndexRoute extends Route {
                         })
                 }
             }, function (error, result) {
+                if (error) {
+                    res.status(500);
+                    return res.send('Error: Internal server error.');
+                }
+
                 res.render('index', result);
             });
+        });
+
+        this._all(null, (req: express.Request, res: express.Response) => {
+            res.status(404);
+            res.send('Error: Not found.');
         });
     }
 }

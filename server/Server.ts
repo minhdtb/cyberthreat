@@ -8,6 +8,8 @@ import * as winston from "winston";
 const config = require('../../config.json');
 const EXCHANGE_NAME = 'message';
 
+type ConsumerCallback = (msg) => void;
+
 class RData {
     public name: string;
     public domain: string;
@@ -35,40 +37,66 @@ export class Server {
         this.server = http.createServer(this.application.express);
         this.io = SocketIO(this.server);
 
-        AMQP.connect('amqp://localhost')
-            .then((connection) => {
-                connection
-                    .createChannel()
-                    .then((channel) => {
-                        channel.assertExchange(EXCHANGE_NAME, 'fanout', {durable: false});
-                        channel.assertQueue('', {exclusive: true})
-                            .then((queue) => {
-                                channel.bindQueue(queue.queue, EXCHANGE_NAME, '');
+        this.consume('amqp://localhost', msg => {
+            let currentData = Server.getRawData(msg);
+            if (currentData) {
+                this.sendBrowserMessage({
+                    id: 0,
+                    location: currentData.location,
+                    remoteHost: currentData.remoteHost,
+                    regionCode: currentData.regionCode,
+                    countryCode: currentData.countryCode,
+                    name: currentData.name
+                });
+            }
+        });
 
-                                channel.consume(queue.queue, (msg) => {
-                                    let currentData = Server.getRawData(msg);
-                                    if (currentData) {
-                                        this.sendBrowserMessage({
-                                            id: 0,
-                                            location: currentData.location,
-                                            remoteHost: currentData.remoteHost,
-                                            regionCode: currentData.regionCode,
-                                            countryCode: currentData.countryCode,
-                                            name: currentData.name
-                                        });
-                                    }
-                                });
-                            })
-                            .catch((error) => {
-                                this.logger.error(error);
+        this.consume('amqp://localhost', msg => {
+            let currentData = Server.getRawData(msg);
+            if (currentData) {
+                DataService.getInstance().checkBlackList(currentData.remoteHost)
+                    .then((value) => {
+                        if (value)
+                            this.sendBrowserBlackList({
+                                id: 0,
+                                location: currentData.location,
+                                remoteHost: currentData.remoteHost,
+                                regionCode: currentData.regionCode,
+                                countryCode: currentData.countryCode,
+                                name: currentData.name
                             });
                     })
                     .catch((error) => {
                         this.logger.error(error);
                     });
-            });
+            }
+        });
 
-        AMQP.connect('amqp://localhost')
+        this.consume('amqp://localhost', msg => {
+            if (config.save) {
+                let currentData = Server.getRawData(msg);
+                if (currentData) {
+                    DataService.getInstance().insertRawData(
+                        currentData.name,
+                        currentData.domain,
+                        currentData.publicIP,
+                        currentData.location,
+                        currentData.remoteHost,
+                        currentData.macAddress,
+                        currentData.regionCode,
+                        currentData.countryCode)
+                        .then(() => {
+                        })
+                        .catch((error) => {
+                            this.logger.error(error);
+                        });
+                }
+            }
+        })
+    }
+
+    private consume(uri, callback: ConsumerCallback): void {
+        AMQP.connect(uri)
             .then((connection) => {
                 connection
                     .createChannel()
@@ -79,65 +107,7 @@ export class Server {
                                 channel.bindQueue(queue.queue, EXCHANGE_NAME, '');
 
                                 channel.consume(queue.queue, (msg) => {
-                                    let currentData = Server.getRawData(msg);
-                                    if (currentData) {
-                                        DataService.getInstance().checkBlackList(currentData.remoteHost)
-                                            .then((value) => {
-                                                if (value)
-                                                    this.sendBrowserBlackList({
-                                                        id: 0,
-                                                        location: currentData.location,
-                                                        remoteHost: currentData.remoteHost,
-                                                        regionCode: currentData.regionCode,
-                                                        countryCode: currentData.countryCode,
-                                                        name: currentData.name
-                                                    });
-                                            })
-                                            .catch((error) => {
-                                                this.logger.error(error);
-                                            });
-                                    }
-                                });
-                            })
-                            .catch((error) => {
-                                this.logger.error(error);
-                            });
-                    })
-                    .catch((error) => {
-                        this.logger.error(error);
-                    });
-            });
-
-        AMQP.connect('amqp://localhost')
-            .then((connection) => {
-                connection
-                    .createChannel()
-                    .then((channel) => {
-                        channel.assertExchange(EXCHANGE_NAME, 'fanout', {durable: false});
-                        channel.assertQueue('', {exclusive: true})
-                            .then((queue) => {
-                                channel.bindQueue(queue.queue, EXCHANGE_NAME, '');
-
-                                channel.consume(queue.queue, (msg) => {
-                                    if (config.save) {
-                                        let currentData = Server.getRawData(msg);
-                                        if (currentData) {
-                                            DataService.getInstance().insertRawData(
-                                                currentData.name,
-                                                currentData.domain,
-                                                currentData.publicIP,
-                                                currentData.location,
-                                                currentData.remoteHost,
-                                                currentData.macAddress,
-                                                currentData.regionCode,
-                                                currentData.countryCode)
-                                                .then(() => {
-                                                })
-                                                .catch((error) => {
-                                                    this.logger.error(error);
-                                                });
-                                        }
-                                    }
+                                    callback(msg);
                                 });
                             })
                             .catch((error) => {

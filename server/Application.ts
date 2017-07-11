@@ -5,7 +5,6 @@ import * as cookieParser from "cookie-parser";
 import {IndexRoute} from "./routes/IndexRoute";
 import {ApiRoute} from "./routes/ApiRoute";
 import {Server} from "./Server";
-import server = require("socket.io");
 
 export class Application {
 
