@@ -107,16 +107,16 @@ $(document).ready(() => {
         $.get('/api/get-region?name=' + name, (data) => {
             _.each(data, function (item, i) {
                 let tr = $('<tr>');
-                let td = $('<td>').text(i + 1);
+                let td = $('<td>').css('width', 10).text(i + 1);
                 tr.append(td);
 
-                td = $('<td>').append($('<span>').attr('class', 'flag-icon flag-icon-' + item.countryCode));
+                td = $('<td>').css('width', 20).append($('<span>').attr('class', 'flag-icon flag-icon-' + item.countryCode));
                 tr.append(td);
 
                 td = $('<td>').text(item.regionCode);
                 tr.append(td);
 
-                td = $('<td>').append($('<span>').attr('class', 'badge label-danger').text(item.count));
+                td = $('<td>').css('width', 10).append($('<span>').attr('class', 'badge label-danger').text(item.count));
                 tr.append(td);
 
                 content.append(tr);
@@ -142,13 +142,13 @@ $(document).ready(() => {
         $.get('/api/get-malware-remote?remoteHost=' + remoteHost, (data) => {
             _.each(data, function (item, i) {
                 let tr = $('<tr>');
-                let td = $('<td>').text(i + 1);
+                let td = $('<td>').css('width', 10).text(i + 1);
                 tr.append(td);
 
                 td = $('<td>').text(item.name);
                 tr.append(td);
 
-                td = $('<td>').append($('<span>').attr('class', 'badge label-danger').text(item.count));
+                td = $('<td>').css('width', 10).append($('<span>').attr('class', 'badge label-danger').text(item.count));
                 tr.append(td);
 
                 content.append(tr);
@@ -173,13 +173,13 @@ $(document).ready(() => {
         $.get('/api/get-malware-region?countryCode=' + countryCode + '&regionCode=' + regionCode, (data) => {
             _.each(data, function (item, i) {
                 let tr = $('<tr>');
-                let td = $('<td>').text(i + 1);
+                let td = $('<td>').css('width', 10).text(i + 1);
                 tr.append(td);
 
                 td = $('<td>').text(item.name);
                 tr.append(td);
 
-                td = $('<td>').append($('<span>').attr('class', 'badge label-danger').text(item.count));
+                td = $('<td>').css('width', 10).append($('<span>').attr('class', 'badge label-danger').text(item.count));
                 tr.append(td);
 
                 content.append(tr);
