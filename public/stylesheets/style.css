@@ -22,8 +22,8 @@ a {
     display: none;
     position: absolute;
     z-index: 9999;
-
-    background-color: #1e252f;
+    border-radius: 5px;
+    background-color: #141e29;
     padding-top: 15px;
     padding-bottom: 15px;
     box-shadow: 0 0 10px 1px black;
