@@ -23,9 +23,27 @@ a {
     position: absolute;
     z-index: 9999;
 
-    background-color: #1d2127;
+    background-color: #1e252f;
     padding-top: 15px;
     padding-bottom: 15px;
     box-shadow: 0 0 10px 1px black;
+}
 
+.badge {
+    cursor: pointer;
+}
+
+.col-index {
+    width: 10px;
+    text-align: center;
+}
+
+.col-badge {
+    width: 10px;
+    text-align: center;
+}
+
+.col-flag {
+    width: 20px;
+    text-align: center;
 }
