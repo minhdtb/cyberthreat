@@ -22,7 +22,7 @@ class RData {
     public countryCode: string;
 }
 
-export class ServerMessages extends Server {
+export class ServerMsg extends Server {
 
     private isSending: boolean;
     private io: SocketIO.Server;
@@ -34,7 +34,7 @@ export class ServerMessages extends Server {
         this.io = SocketIO(this.server);
 
         this.consume('amqp://localhost', msg => {
-            let currentData = ServerMessages.getRawData(msg);
+            let currentData = ServerMsg.getRawData(msg);
             if (currentData) {
                 this.sendBrowserMessage({
                     id: 0,
@@ -48,7 +48,7 @@ export class ServerMessages extends Server {
         });
 
         this.consume('amqp://localhost', msg => {
-            let currentData = ServerMessages.getRawData(msg);
+            let currentData = ServerMsg.getRawData(msg);
             if (currentData) {
                 DataService.getInstance().checkBlackList(currentData.remoteHost)
                     .then((value) => {
@@ -70,7 +70,7 @@ export class ServerMessages extends Server {
 
         this.consume('amqp://localhost', msg => {
             if (config.save) {
-                let currentData = ServerMessages.getRawData(msg);
+                let currentData = ServerMsg.getRawData(msg);
                 if (currentData) {
                     DataService.getInstance().insertRawData(
                         currentData.name,
