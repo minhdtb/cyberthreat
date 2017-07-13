@@ -2,7 +2,7 @@ import {Observable} from 'rxjs/Observable'
 import {Message} from "./Message";
 import * as SocketIO from 'socket.io-client';
 
-let SERVER_URL = 'http://localhost:3000';
+let SERVER_URL = 'http://localhost:3001';
 
 export class SocketService {
     private socket;

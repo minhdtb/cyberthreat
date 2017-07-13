@@ -1,5 +1,5 @@
 var webpack = require('webpack');
-var path = require('path');
+const path = require('path');
 
 module.exports = [
     {
@@ -17,7 +17,8 @@ module.exports = [
             loaders: [
                 {
                     test: /\.ts$/,
-                    exclude: [__dirname + '/node_modules', __dirname + '/public'],
+                    exclude: [path.resolve(__dirname, 'node_modules'),
+                        path.resolve(__dirname, 'public'), path.resolve(__dirname, 'server')],
                     loader: 'awesome-typescript-loader'
 
                 },
@@ -31,7 +32,6 @@ module.exports = [
                 },
                 {
                     test: /\.css$/,
-                    exclude: [__dirname + '/node_modules', __dirname + '/public'],
                     loader: 'css-loader'
                 }
             ]
