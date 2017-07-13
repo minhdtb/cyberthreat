@@ -95,6 +95,8 @@ $(document).ready(() => {
         });
 
     let popup = $('#popup');
+    let content = $('#content');
+    content.html('');
 
     let badgeMalware = $('.badge.malware');
     badgeMalware.on('mouseenter', event => {
@@ -102,7 +104,6 @@ $(document).ready(() => {
         popup.css('left', $(event.target).offset().left + 50);
         popup.css('top', $(event.target).offset().top);
         let name = $(event.target).data('name');
-        let content = $('#content');
         content.html('');
         $.get('/api/get-region?name=' + name, (data) => {
             _.each(data, function (item, i) {
@@ -137,7 +138,6 @@ $(document).ready(() => {
         popup.css('left', $(event.target).offset().left + 50);
         popup.css('top', $(event.target).offset().top);
         let remoteHost = $(event.target).data('host');
-        let content = $('#content');
         content.html('');
         $.get('/api/get-malware-remote?remoteHost=' + remoteHost, (data) => {
             _.each(data, function (item, i) {
@@ -168,7 +168,6 @@ $(document).ready(() => {
         event.preventDefault();
         let countryCode = $(event.target).data('country-code');
         let regionCode = $(event.target).data('region-code');
-        let content = $('#content');
         content.html('');
         $.get('/api/get-malware-region?countryCode=' + countryCode + '&regionCode=' + regionCode, (data) => {
             _.each(data, function (item, i) {
