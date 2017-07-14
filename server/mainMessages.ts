@@ -2,7 +2,7 @@ import {Server} from "./Server";
 import {Application} from "./Application";
 import * as winston from "winston";
 import * as moment from "moment";
-import {ServerMsg} from "./ServerMessages";
+import {ServerMsg} from "./ServerMsg";
 
 let logger = new winston.Logger({
     transports: [
