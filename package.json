@@ -8,8 +8,8 @@
     "build-client": "node node_modules/webpack/bin/webpack.js --config webpack.config.js",
     "build": "concurrently \"npm run build-server\" \"npm run build-client\"",
     "watch": "node node_modules/webpack/bin/webpack.js --config webpack.config.js --watch",
-    "start-web": "nodemon build/server/mainWeb.js",
-    "start-messages": "nodemon build/server/mainMessages.js",
+    "start-web": "nodemon build/server/run/web.js",
+    "start-messages": "nodemon build/server/run/messages.js",
     "start": "concurrently \"npm run watch\" \"npm run start-web\" \"npm run start-messages\""
   },
   "author": "minhdtb",

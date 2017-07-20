@@ -2,11 +2,11 @@ import {Server} from "./Server";
 import * as winston from "winston";
 import * as http from "http";
 import * as SocketIO from "socket.io";
-import {Message} from "../client/Message";
+import {Message} from "../../client/Message";
 import * as AMQP from "amqplib";
-import DataService from "./services/DataService";
+import DataService from "../services/DataService";
 
-const config = require('../../config.json');
+const config = require('../../../config.json');
 const EXCHANGE_NAME = 'message';
 
 type ConsumerCallback = (msg) => void;
@@ -22,7 +22,7 @@ class RData {
     public countryCode: string;
 }
 
-export class ServerMsg extends Server {
+export class MessagesServer extends Server {
 
     private isSending: boolean;
     private io: SocketIO.Server;
@@ -34,7 +34,7 @@ export class ServerMsg extends Server {
         this.io = SocketIO(this.server);
 
         this.consume('amqp://localhost', msg => {
-            let currentData = ServerMsg.getRawData(msg);
+            let currentData = MessagesServer.getRawData(msg);
             if (currentData) {
                 this.sendBrowserMessage({
                     id: 0,
@@ -48,7 +48,7 @@ export class ServerMsg extends Server {
         });
 
         this.consume('amqp://localhost', msg => {
-            let currentData = ServerMsg.getRawData(msg);
+            let currentData = MessagesServer.getRawData(msg);
             if (currentData) {
                 DataService.getInstance().checkBlackList(currentData.remoteHost)
                     .then((value) => {
@@ -70,7 +70,7 @@ export class ServerMsg extends Server {
 
         this.consume('amqp://localhost', msg => {
             if (config.save) {
-                let currentData = ServerMsg.getRawData(msg);
+                let currentData = MessagesServer.getRawData(msg);
                 if (currentData) {
                     DataService.getInstance().insertRawData(
                         currentData.name,

@@ -3,8 +3,7 @@ import {Application} from "./Application";
 import * as winston from "winston";
 import {Server} from "./Server";
 
-
-export class ServerWeb extends Server {
+export class WebServer extends Server {
 
     constructor(app: Application, logger: winston.LoggerInstance) {
         super(logger);

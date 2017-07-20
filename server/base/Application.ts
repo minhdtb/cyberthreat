@@ -2,8 +2,8 @@ import * as express from "express";
 import * as logger from "morgan";
 import * as bodyParser from "body-parser";
 import * as cookieParser from "cookie-parser";
-import {IndexRoute} from "./routes/IndexRoute";
-import {ApiRoute} from "./routes/ApiRoute";
+import {IndexRoute} from "../routes/IndexRoute";
+import {ApiRoute} from "../routes/ApiRoute";
 import {Server} from "./Server";
 
 export class Application {
