@@ -10,7 +10,9 @@
     "watch": "node node_modules/webpack/bin/webpack.js --config webpack.config.js --watch",
     "start-web": "nodemon build/server/run/web.js",
     "start-messages": "nodemon build/server/run/messages.js",
-    "start": "concurrently \"npm run watch\" \"npm run start-web\" \"npm run start-messages\""
+    "start-database": "nodemon build/server/run/database.js",
+    "start-dev": "concurrently \"npm run watch\" \"npm run start-web\" \"npm run start-messages\" \"npm run start-database\"",
+    "start": "concurrently \"npm run start-web\" \"npm run start-messages\" \"npm run start-database\""
   },
   "author": "minhdtb",
   "license": "MIT",

@@ -217,7 +217,7 @@ amqp.connect('amqp://localhost', function (err, conn) {
             // setTimeout(function (args) {
             //     process.exit(0);
             // }, 500);
-            setTimeout(publish, 50);
+            setTimeout(publish, 1);
         }
 
         publish();

@@ -1,13 +1,13 @@
 import * as winston from "winston";
 import * as moment from "moment";
-import {MessagesServer} from "../base/MessagesServer";
+import {DatabaseServer} from "../base/DatabaseServer";
 
 let logger = new winston.Logger({
     transports: [
         new (winston.transports.Console)(),
         new (winston.transports.File)({
             level: 'error',
-            filename: 'messages.log',
+            filename: 'database.log',
             timestamp: function () {
                 return moment(new Date()).format('YYYY-MM-DD HH:mm:ss.SSS');
             },
@@ -23,7 +23,6 @@ process.on('uncaughtException', function (error: any) {
     logger.error(error);
 });
 
-let server = new MessagesServer(logger);
-server.port = 3001;
+let server = new DatabaseServer(logger);
 server.start();
 
