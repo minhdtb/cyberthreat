@@ -4,5 +4,8 @@ interface Terminal {
 
 interface JQuery {
     terminal(v1: any, v2: any): Terminal;
+
     draggable(options?: any): void
+
+    dataTable(option?: any): void;
 }

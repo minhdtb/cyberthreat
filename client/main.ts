@@ -77,12 +77,14 @@ $(document).ready(() => {
 
     $('#console').draggable();
 
-    terminal = terminalLog.terminal(function () {
-    }, {
-        greetings: false,
-        height: 100,
-        prompt: PROMPT
-    });
+    if (terminalLog.length) {
+        terminal = terminalLog.terminal(function () {
+        }, {
+            greetings: false,
+            height: 100,
+            prompt: PROMPT
+        });
+    }
 
     d3.selectAll('path')
         .on('mouseover', function () {
@@ -193,5 +195,32 @@ $(document).ready(() => {
     badgeRegion.on('mouseleave', event => {
         event.preventDefault();
         popup.hide();
+    });
+
+    $('#table-malware').dataTable({
+        bAutoWidth: false,
+        aoColumns: [
+            {sWidth: '5%'},
+            {sWidth: '85%'},
+            {sWidth: '10%'},
+        ]
+    });
+    $('#table-region').dataTable({
+        bAutoWidth: false,
+        aoColumns: [
+            {sWidth: '5%'},
+            {sWidth: '45%'},
+            {sWidth: '40%'},
+            {sWidth: '10%'},
+        ]
+    });
+    
+    $('#table-remote').dataTable({
+        bAutoWidth: false,
+        aoColumns: [
+            {sWidth: '5%'},
+            {sWidth: '85%'},
+            {sWidth: '10%'},
+        ]
     });
 });

@@ -4874,7 +4874,7 @@ window.theme = {};
 		$.extend(true, $.fn.dataTable.defaults, {
 			sDom: "<'row datatables-header form-inline'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>r><'table-responsive't><'row datatables-footer'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>",
 			oLanguage: {
-				sLengthMenu: '_MENU_ records per page',
+				sLengthMenu: '_MENU_',
 				sProcessing: '<i class="fa fa-spinner fa-spin"></i> Loading'
 			},
 			fnInitComplete: function( settings, json ) {

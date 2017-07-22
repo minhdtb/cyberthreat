@@ -258,14 +258,14 @@ export default class DataService {
         });
     }
 
-    public getTopMalware(countryCode?: string, regionCode?: string, remoteHost?: string) {
+    public getTopMalware(limit: number, countryCode?: string, regionCode?: string, remoteHost?: string) {
         return new Promise((resolve, reject) => {
             this.connectionPool.getConnection((error, connection) => {
                 if (error) {
                     return reject(error);
                 }
 
-                let query = '';
+                let query = null;
                 if (countryCode && regionCode) {
                     query = SQLBuilder.select()
                         .from(CMC_MALWARES)
@@ -275,8 +275,6 @@ export default class DataService {
                         .where('countryCode = ?', countryCode)
                         .where('regionCode = ?', regionCode)
                         .order('count', false)
-                        .limit(10)
-                        .toString();
                 }
                 else if (remoteHost) {
                     query = SQLBuilder.select()
@@ -286,8 +284,6 @@ export default class DataService {
                         .group('name')
                         .where('remoteHost = ?', remoteHost)
                         .order('count', false)
-                        .limit(10)
-                        .toString();
                 }
                 else {
                     query = SQLBuilder.select()
@@ -296,11 +292,13 @@ export default class DataService {
                         .field('SUM(count)', 'count')
                         .group('name')
                         .order('count', false)
-                        .limit(10)
-                        .toString();
                 }
 
-                connection.query(query, (error, results) => {
+                if (limit > 0) {
+                    query = query.limit(limit);
+                }
+
+                connection.query(query.toString(), (error, results) => {
                     connection.release();
 
                     if (error) {
@@ -313,14 +311,14 @@ export default class DataService {
         })
     }
 
-    public getTopRegion(name?: string) {
+    public getTopRegion(limit: number, name?: string) {
         return new Promise((resolve, reject) => {
             this.connectionPool.getConnection((error, connection) => {
                 if (error) {
                     return reject(error);
                 }
 
-                let query = '';
+                let query = null;
                 if (name) {
                     query = SQLBuilder.select()
                         .from(CMC_MALWARES)
@@ -331,8 +329,6 @@ export default class DataService {
                         .group('countryCode')
                         .where('name = ?', name)
                         .order('count', false)
-                        .limit(10)
-                        .toString();
                 } else {
                     query = SQLBuilder.select()
                         .from(CMC_MALWARES)
@@ -342,11 +338,13 @@ export default class DataService {
                         .group('regionCode')
                         .group('countryCode')
                         .order('count', false)
-                        .limit(10)
-                        .toString();
                 }
 
-                connection.query(query, (error, results) => {
+                if (limit > 0) {
+                    query = query.limit(limit);
+                }
+
+                connection.query(query.toString(), (error, results) => {
                     connection.release();
 
                     if (error) {
@@ -359,7 +357,7 @@ export default class DataService {
         })
     }
 
-    public getTopRemote() {
+    public getTopRemote(limit: number) {
         return new Promise((resolve, reject) => {
             this.connectionPool.getConnection((error, connection) => {
                 if (error) {
@@ -371,11 +369,13 @@ export default class DataService {
                     .field('remoteHost')
                     .field('SUM(count)', 'count')
                     .group('remoteHost')
-                    .order('count', false)
-                    .limit(10)
-                    .toString();
+                    .order('count', false);
 
-                connection.query(query, (error, results) => {
+                if (limit > 0) {
+                    query = query.limit(limit);
+                }
+
+                connection.query(query.toString(), (error, results) => {
                     connection.release();
 
                     if (error) {
