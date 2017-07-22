@@ -3,6 +3,7 @@ import {IPool} from "mysql";
 import * as SQLBuilder from "squel";
 import * as moment from "moment";
 import * as _ from "lodash";
+import * as async from "async";
 
 const config = require('../../../config.json');
 
