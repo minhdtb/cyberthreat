@@ -170,16 +170,21 @@ export default class DataService {
                     .field('name')
                     .field('regionCode')
                     .field('countryCode')
+                    .field('v2.region_name', 'regionName')
+                    .field('v1.country_name', 'countryName')
                     .field('remoteHost')
                     .field('COUNT(name)', 'count')
                     .group('name')
                     .group('regionCode')
                     .group('countryCode')
                     .group('remoteHost')
+                    .join(CMC_MASTER_REGION, 'v1', 'UPPER(countryCode) = v1.country_alpha2_code')
+                    .join(CMC_MASTER_REGION, 'v2', 'UPPER(countryCode) = v2.country_alpha2_code AND regionCode = v2.region_code')
                     .where('createdDate >= ?', lastDay)
                     .where('createdDate <= ?', toDay)
                     .toString();
 
+                console.log(query);
                 connection.query(query, (error, results) => {
                     connection.release();
 
@@ -221,6 +226,8 @@ export default class DataService {
                     .set('name', record.name)
                     .set('regionCode', record.regionCode)
                     .set('countryCode', record.countryCode)
+                    .set('regionName', record.regionName)
+                    .set('countryName', record.countryName)
                     .set('remoteHost', record.remoteHost)
                     .set('count', record.count)
                     .toString();
@@ -252,7 +259,7 @@ export default class DataService {
                         return reject(error);
                     }
 
-                    resolve();
+                    resolve(results);
                 })
             });
         });
@@ -324,6 +331,8 @@ export default class DataService {
                         .from(CMC_MALWARES)
                         .field('countryCode')
                         .field('regionCode')
+                        .field('countryName')
+                        .field('regionName')
                         .field('SUM(count)', 'count')
                         .group('regionCode')
                         .group('countryCode')
@@ -334,6 +343,8 @@ export default class DataService {
                         .from(CMC_MALWARES)
                         .field('countryCode')
                         .field('regionCode')
+                        .field('countryName')
+                        .field('regionName')
                         .field('SUM(count)', 'count')
                         .group('regionCode')
                         .group('countryCode')
