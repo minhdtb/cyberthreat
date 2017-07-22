@@ -183,8 +183,7 @@ export default class DataService {
                     .where('createdDate >= ?', lastDay)
                     .where('createdDate <= ?', toDay)
                     .toString();
-
-                console.log(query);
+                
                 connection.query(query, (error, results) => {
                     connection.release();
 
