@@ -1,8 +1,10 @@
 import {IPool} from "mysql";
+
 const config = require('../../../config.json');
 import * as mysql from "mysql";
 import * as SQLBuilder from "squel";
 import * as moment from "moment";
+import * as _ from "lodash";
 
 const DB_PREFIX = 'cmc';
 
@@ -10,6 +12,8 @@ const CMC_MASTER_LOCATION = DB_PREFIX + '_master_location';
 const CMC_MASTER_REGION = DB_PREFIX + '_master_region';
 const CMC_RAW_DATA = DB_PREFIX + '_raw_data';
 const CMC_BLACK_LIST = DB_PREFIX + '_black_list';
+
+const CMC_MALWARES = DB_PREFIX + '_malwares';
 
 export default class DataService {
 
@@ -151,7 +155,7 @@ export default class DataService {
         });
     }
 
-    public getTopMalware(countryCode?: string, regionCode?: string, remoteHost?: string) {
+    public generateMalwareList() {
         return new Promise((resolve, reject) => {
             this.connectionPool.getConnection((error, connection) => {
                 if (error) {
@@ -161,15 +165,113 @@ export default class DataService {
                 let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
                 let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
 
+                let query = SQLBuilder.select()
+                    .from(CMC_RAW_DATA)
+                    .field('name')
+                    .field('regionCode')
+                    .field('countryCode')
+                    .field('remoteHost')
+                    .field('COUNT(name)', 'count')
+                    .group('name')
+                    .group('regionCode')
+                    .group('countryCode')
+                    .group('remoteHost')
+                    .where('createdDate >= ?', lastDay)
+                    .where('createdDate <= ?', toDay)
+                    .toString();
+
+                connection.query(query, (error, results) => {
+                    connection.release();
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    if (results.length > 0) {
+                        this.truncateTable(CMC_MALWARES)
+                            .then(() => {
+                                _.each(results, (item) => {
+                                    this.insertMalware(item)
+                                        .then(() => {
+                                        })
+                                        .catch(() => {
+                                        });
+                                });
+
+                                resolve();
+                            })
+                            .catch(error => {
+                                return reject(error);
+                            });
+                    }
+                });
+            });
+        });
+    }
+
+    public insertMalware(record) {
+        return new Promise((resolve, reject) => {
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                let query = SQLBuilder.insert()
+                    .into(CMC_MALWARES)
+                    .set('name', record.name)
+                    .set('regionCode', record.regionCode)
+                    .set('countryCode', record.countryCode)
+                    .set('remoteHost', record.remoteHost)
+                    .set('count', record.count)
+                    .toString();
+
+                connection.query(query, (error, results) => {
+                    connection.release();
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(results);
+                });
+            });
+        });
+    }
+
+    public truncateTable(table: string) {
+        return new Promise((resolve, reject) => {
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                connection.query('TRUNCATE ' + table, (error, results) => {
+                    connection.release();
+
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve();
+                })
+            });
+        });
+    }
+
+    public getTopMalware(countryCode?: string, regionCode?: string, remoteHost?: string) {
+        return new Promise((resolve, reject) => {
+            this.connectionPool.getConnection((error, connection) => {
+                if (error) {
+                    return reject(error);
+                }
+
                 let query = '';
                 if (countryCode && regionCode) {
                     query = SQLBuilder.select()
-                        .from(CMC_RAW_DATA)
+                        .from(CMC_MALWARES)
                         .field('name')
-                        .field('COUNT(name)', 'count')
+                        .field('SUM(count)', 'count')
                         .group('name')
-                        .where('createdDate >= ?', lastDay)
-                        .where('createdDate <= ?', toDay)
                         .where('countryCode = ?', countryCode)
                         .where('regionCode = ?', regionCode)
                         .order('count', false)
@@ -178,12 +280,10 @@ export default class DataService {
                 }
                 else if (remoteHost) {
                     query = SQLBuilder.select()
-                        .from(CMC_RAW_DATA)
+                        .from(CMC_MALWARES)
                         .field('name')
-                        .field('COUNT(name)', 'count')
+                        .field('SUM(count)', 'count')
                         .group('name')
-                        .where('createdDate >= ?', lastDay)
-                        .where('createdDate <= ?', toDay)
                         .where('remoteHost = ?', remoteHost)
                         .order('count', false)
                         .limit(10)
@@ -191,12 +291,10 @@ export default class DataService {
                 }
                 else {
                     query = SQLBuilder.select()
-                        .from(CMC_RAW_DATA)
+                        .from(CMC_MALWARES)
                         .field('name')
-                        .field('COUNT(name)', 'count')
+                        .field('SUM(count)', 'count')
                         .group('name')
-                        .where('createdDate >= ?', lastDay)
-                        .where('createdDate <= ?', toDay)
                         .order('count', false)
                         .limit(10)
                         .toString();
@@ -222,34 +320,27 @@ export default class DataService {
                     return reject(error);
                 }
 
-                let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-                let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
-
                 let query = '';
                 if (name) {
                     query = SQLBuilder.select()
-                        .from(CMC_RAW_DATA)
+                        .from(CMC_MALWARES)
                         .field('countryCode')
                         .field('regionCode')
-                        .field('COUNT(*)', 'count')
+                        .field('SUM(count)', 'count')
                         .group('regionCode')
                         .group('countryCode')
-                        .where('createdDate >= ?', lastDay)
-                        .where('createdDate <= ?', toDay)
                         .where('name = ?', name)
                         .order('count', false)
                         .limit(10)
                         .toString();
                 } else {
                     query = SQLBuilder.select()
-                        .from(CMC_RAW_DATA)
+                        .from(CMC_MALWARES)
                         .field('countryCode')
                         .field('regionCode')
-                        .field('COUNT(*)', 'count')
+                        .field('SUM(count)', 'count')
                         .group('regionCode')
                         .group('countryCode')
-                        .where('createdDate >= ?', lastDay)
-                        .where('createdDate <= ?', toDay)
                         .order('count', false)
                         .limit(10)
                         .toString();
@@ -275,16 +366,11 @@ export default class DataService {
                     return reject(error);
                 }
 
-                let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-                let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
-
                 let query = SQLBuilder.select()
-                    .from(CMC_RAW_DATA)
+                    .from(CMC_MALWARES)
                     .field('remoteHost')
-                    .field('COUNT(*)', 'count')
+                    .field('SUM(count)', 'count')
                     .group('remoteHost')
-                    .where('createdDate >= ?', lastDay)
-                    .where('createdDate <= ?', toDay)
                     .order('count', false)
                     .limit(10)
                     .toString();

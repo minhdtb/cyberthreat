@@ -60,5 +60,16 @@ export class ApiRoute extends Route {
                     res.send(error);
                 });
         });
+
+        this._get('/api/generate-list', (req: express.Request, res: express.Response) => {
+            DataService.getInstance().generateMalwareList()
+                .then(() => {
+                    res.send({});
+                })
+                .catch(error => {
+                    res.status(500);
+                    res.send(error);
+                });
+        });
     }
 }
