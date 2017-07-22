@@ -53,7 +53,7 @@ export default class DataService {
                     return reject(error);
                 }
 
-                let query = SQLBuilder.insert()
+                let query = SQLBuilder.insert({replaceSingleQuotes: true})
                     .into(CMC_RAW_DATA)
                     .set('name', name)
                     .set('domain', domain)
@@ -235,7 +235,7 @@ export default class DataService {
                     return reject(error);
                 }
 
-                let query = SQLBuilder.insert()
+                let query = SQLBuilder.insert({replaceSingleQuotes: true})
                     .into(CMC_MALWARES)
                     .set('name', record.name)
                     .set('regionCode', record.regionCode)
