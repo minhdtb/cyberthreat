@@ -1,10 +1,10 @@
-import {IPool} from "mysql";
-
-const config = require('../../../config.json');
 import * as mysql from "mysql";
+import {IPool} from "mysql";
 import * as SQLBuilder from "squel";
 import * as moment from "moment";
 import * as _ from "lodash";
+
+const config = require('../../../config.json');
 
 const DB_PREFIX = 'cmc';
 
@@ -183,7 +183,7 @@ export default class DataService {
                     .where('createdDate >= ?', lastDay)
                     .where('createdDate <= ?', toDay)
                     .toString();
-                
+
                 connection.query(query, (error, results) => {
                     connection.release();
 
@@ -194,19 +194,33 @@ export default class DataService {
                     if (results.length > 0) {
                         this.truncateTable(CMC_MALWARES)
                             .then(() => {
+
+                                let calls = [];
                                 _.each(results, (item) => {
-                                    this.insertMalware(item)
-                                        .then(() => {
-                                        })
-                                        .catch(() => {
-                                        });
+                                    calls.push((callback) => {
+                                        this.insertMalware(item)
+                                            .then(() => {
+                                                callback(null);
+                                            })
+                                            .catch(error => {
+                                                callback(error);
+                                            });
+                                    });
                                 });
 
-                                resolve();
+                                async.series(calls, (error) => {
+                                    if (error) {
+                                        return reject(error);
+                                    }
+
+                                    resolve();
+                                });
                             })
                             .catch(error => {
                                 return reject(error);
                             });
+                    } else {
+                        resolve();
                     }
                 });
             });

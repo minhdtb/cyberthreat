@@ -7,7 +7,6 @@ let logger = new winston.Logger({
     transports: [
         new (winston.transports.Console)(),
         new (winston.transports.File)({
-            level: 'error',
             filename: 'web.log',
             timestamp: function () {
                 return moment(new Date()).format('YYYY-MM-DD HH:mm:ss.SSS');

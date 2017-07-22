@@ -63,8 +63,11 @@ export class ApiRoute extends Route {
         });
 
         this._get('/api/generate-list', (req: express.Request, res: express.Response) => {
+            let logger = this.application.server.logger;
+            logger.info('Malware list is generating...');
             DataService.getInstance().generateMalwareList()
                 .then(() => {
+                    logger.info('Malware list generated.');
                     res.send({});
                 })
                 .catch(error => {

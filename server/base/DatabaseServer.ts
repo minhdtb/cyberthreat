@@ -11,10 +11,11 @@ export class DatabaseServer extends Server {
     constructor(logger: winston.LoggerInstance) {
         super(logger);
 
-        let job = new cron.CronJob('*/5 * * * *', function () {
+        let job = new cron.CronJob('*/5 * * * *', () => {
+            logger.info('Malware list is generating...');
             DataService.getInstance().generateMalwareList()
                 .then(() => {
-                    logger.info('Malware list generated.')
+                    logger.info('Malware list generated.');
                 })
                 .catch(error => {
                     logger.error(error);
@@ -22,7 +23,7 @@ export class DatabaseServer extends Server {
         }, null, false, 'Asia/Ho_Chi_Minh');
 
         job.start();
-        
+
         this.consume('amqp://localhost', msg => {
             if (config.save) {
                 let currentData = DatabaseServer.getRawData(msg);
