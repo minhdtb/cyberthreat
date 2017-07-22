@@ -45,6 +45,10 @@ export class IndexRoute extends Route {
             });
         });
 
+        this._get('/report', (req: express.Request, res: express.Response) => {
+            res.render('report', {});
+        });
+
         this._all(null, (req: express.Request, res: express.Response) => {
             res.status(404);
             res.send('Error: Not found.');
