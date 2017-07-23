@@ -1,23 +1,21 @@
-import {Server} from "./Server";
 import * as winston from "winston";
-import * as http from "http";
 import * as SocketIO from "socket.io";
 import {Message} from "../../client/Message";
 import DataService from "../services/DataService";
+import {consume, getRawData} from "../base/AmqpUtils";
+import {HttpServer} from "../base/HttpServer";
 
-export class MessagesServer extends Server {
+export class MessagesServer extends HttpServer {
 
     private isSending: boolean;
     private io: SocketIO.Server;
 
     constructor(logger: winston.LoggerInstance) {
-        super(logger);
-        this.application = null;
-        this.server = http.createServer();
-        this.io = SocketIO(this.server);
+        super(null, logger);
+        this.io = SocketIO(this.getHttpServer());
 
-        this.consume('amqp://localhost', msg => {
-            let currentData = MessagesServer.getRawData(msg);
+        consume('amqp://localhost', msg => {
+            let currentData = getRawData(msg);
             if (currentData) {
                 this.sendBrowserMessage({
                     id: 0,
@@ -30,8 +28,8 @@ export class MessagesServer extends Server {
             }
         });
 
-        this.consume('amqp://localhost', msg => {
-            let currentData = MessagesServer.getRawData(msg);
+        consume('amqp://localhost', msg => {
+            let currentData = getRawData(msg);
             if (currentData) {
                 DataService.getInstance().checkBlackList(currentData.remoteHost)
                     .then((value) => {
@@ -46,7 +44,7 @@ export class MessagesServer extends Server {
                             });
                     })
                     .catch((error) => {
-                        this.logger.error(error);
+                        this.getLogger().error(error);
                     });
             }
         });
@@ -90,6 +88,7 @@ export class MessagesServer extends Server {
 
     start() {
         super.start();
+
         this.io.on('connect', (socket: any) => {
             socket.on('disconnect', () => {
             });

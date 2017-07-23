@@ -1,13 +1,13 @@
-import {Server} from "./Server";
+import {Server} from "../base/Server";
 import * as winston from "winston";
 import * as cron from "cron";
 
 import DataService from "../services/DataService";
+import {consume, getRawData} from "../base/AmqpUtils";
 
 const config = require('../../../config.json');
 
 export class DatabaseServer extends Server {
-
     constructor(logger: winston.LoggerInstance) {
         super(logger);
 
@@ -24,9 +24,9 @@ export class DatabaseServer extends Server {
 
         job.start();
 
-        this.consume('amqp://localhost', msg => {
+        consume('amqp://localhost', msg => {
             if (config.save) {
-                let currentData = DatabaseServer.getRawData(msg);
+                let currentData = getRawData(msg);
                 if (currentData) {
                     DataService.getInstance().insertRawData(
                         currentData.name,
@@ -40,10 +40,13 @@ export class DatabaseServer extends Server {
                         .then(() => {
                         })
                         .catch((error) => {
-                            this.logger.error(error);
+                            logger.error(error);
                         });
                 }
             }
         });
+    }
+
+    start() {
     }
 }

@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import * as moment from "moment";
-import {DatabaseServer} from "../base/DatabaseServer";
+import {DatabaseServer} from "../controllers/DatabaseServer";
 
 let logger = new winston.Logger({
     transports: [

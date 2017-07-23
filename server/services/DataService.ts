@@ -11,6 +11,7 @@ const DB_PREFIX = 'cmc';
 
 const CMC_MASTER_LOCATION = DB_PREFIX + '_master_location';
 const CMC_MASTER_REGION = DB_PREFIX + '_master_region';
+const CMC_MASTER_COUNTRY = DB_PREFIX + '_master_country';
 const CMC_RAW_DATA = DB_PREFIX + '_raw_data';
 const CMC_BLACK_LIST = DB_PREFIX + '_black_list';
 
@@ -163,8 +164,8 @@ export default class DataService {
                     return reject(error);
                 }
 
-                let toDay = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-                let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
+                let toDay = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
+                let lastDay = moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD');
 
                 let query = SQLBuilder.select()
                     .from(CMC_RAW_DATA)
@@ -179,8 +180,8 @@ export default class DataService {
                     .group('regionCode')
                     .group('countryCode')
                     .group('remoteHost')
-                    .join(CMC_MASTER_REGION, 'v1', 'UPPER(countryCode) = v1.country_alpha2_code')
-                    .join(CMC_MASTER_REGION, 'v2', 'UPPER(countryCode) = v2.country_alpha2_code AND regionCode = v2.region_code')
+                    .left_join(CMC_MASTER_COUNTRY, 'v1', 'UPPER(countryCode) = v1.country_alpha2_code')
+                    .left_join(CMC_MASTER_REGION, 'v2', 'UPPER(countryCode) = v2.country_alpha2_code AND regionCode = v2.region_code')
                     .where('createdDate >= ?', lastDay)
                     .where('createdDate <= ?', toDay)
                     .toString();

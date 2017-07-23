@@ -1,7 +1,7 @@
-import {Application} from "../base/Application";
+import {Application} from "../controllers/Application";
 import * as winston from "winston";
 import * as moment from "moment";
-import {WebServer} from "../base/WebServer";
+import {WebServer} from "../controllers/WebServer";
 
 let logger = new winston.Logger({
     transports: [
@@ -25,6 +25,6 @@ process.on('uncaughtException', function (error: any) {
 
 let application = new Application();
 let server = new WebServer(application, logger);
-server.port = 3000;
+server.setPort(3000);
 server.start();
 
