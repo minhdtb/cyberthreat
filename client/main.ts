@@ -197,6 +197,12 @@ $(document).ready(() => {
         popup.hide();
     });
 
+    $(document).on('mousemove', () => {
+        if (popup.is(":visible")) {
+            popup.hide();
+        }
+    });
+
     $('#table-malware').dataTable({
         bAutoWidth: false,
         aoColumns: [
