@@ -74,7 +74,6 @@ select {
 }
 
 .system-title {
-    float: left;
     margin-top: 12px;
     margin-left: 60px;
     color: #03a4ff !important;
