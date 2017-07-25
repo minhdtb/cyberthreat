@@ -98,7 +98,7 @@ var names = [
 ];
 
 var times = [
-    1, 1, 1, 2, 2, 3, 3, 5
+    1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 2, 3, 3, 5, 1, 1, 1
 ];
 
 var vietnam_regions = [
@@ -117,7 +117,8 @@ amqp.connect('amqp://minhdtb:123456@115.146.127.126', function (err, conn) {
         function publish() {
             var countryIndex = getRandomInt(0, countries.length - 1);
             var nameIndex = getRandomInt(0, names.length - 1);
-            var sleepTime = getRandomInt(0, times.length - 1);
+            var timeIndex = getRandomInt(0, times.length - 1);
+            console.log(times[timeIndex]);
             var vietnamIndex = getRandomInt(0, vietnam_regions.length - 1);
 
             var msg = process.argv.slice(2).join(' ') || JSON.stringify({
@@ -134,7 +135,7 @@ amqp.connect('amqp://minhdtb:123456@115.146.127.126', function (err, conn) {
             ch.publish(ex, '', new Buffer(msg));
             console.log(" [x] Sent %s", msg);
 
-            setTimeout(publish, sleepTime * 1000);
+            setTimeout(publish, times[timeIndex] * 1000);
         }
 
         publish();
