@@ -68,3 +68,7 @@ select {
     padding: 0 12px 0 12px;
     outline: none;
 }
+
+.col-md-3 {
+    width: 22%;
+}
