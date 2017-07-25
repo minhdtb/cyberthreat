@@ -26,6 +26,11 @@ var countries = [
     'vn',
     'vn',
     'vn',
+    'vn',
+    'vn',
+    'vn',
+    'vn',
+    'vn',
     'us'
 ];
 
@@ -97,7 +102,7 @@ var times = [
 ];
 
 var vietnam_regions = [
-    44, 13, 20, 84, 34, 78
+    13, 20, 84, 34, 78, 98, 99, 97, 96
 ];
 
 function getRandomInt(min, max) {
