@@ -116,7 +116,7 @@ $(document).ready(() => {
                 td = $('<td>').attr('class', 'col-flag').append($('<span>').attr('class', 'flag-icon flag-icon-' + item.countryCode));
                 tr.append(td);
 
-                td = $('<td>').text(item.regionName);
+                td = $('<td>').text(item.regionName ? item.regionName : '-');
                 tr.append(td);
 
                 td = $('<td>').attr('class', 'col-badge').append($('<span>').attr('class', 'badge label-danger').text(item.count));
