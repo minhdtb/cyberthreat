@@ -109,6 +109,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+//amqp.connect('amqp://localhost', function (err, conn) {
 amqp.connect('amqp://minhdtb:123456@115.146.127.126', function (err, conn) {
     conn.createChannel(function (err, ch) {
         var ex = 'message';
