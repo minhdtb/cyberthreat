@@ -45,7 +45,7 @@ $(document).ready(() => {
         let objectVietNamRegion = null;
         if (message.countryCode === 'vn') {
             objectVietNamRegion = d3.select('#map-viet-nam')
-                .select('#VN-' + message.regionCode.toUpperCase());
+                .select('#VN-' + message.regionCode);
         }
 
         let index = 0;
