@@ -72,3 +72,12 @@ select {
 .col-md-3 {
     width: 22%;
 }
+
+.system-title {
+    float: left;
+    margin-top: 12px;
+    margin-left: 60px;
+    color: red !important;
+    font-size: 24px;
+    font-weight: 600;
+}
