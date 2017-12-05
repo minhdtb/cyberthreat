@@ -28,6 +28,31 @@ function createColorRange(c1, c2) {
     return colorList;
 }
 
+function getCenterPoint(object: any) {
+    let bbox = object.getBBox();
+    return {
+        x: bbox.x + bbox.width / 2,
+        y: bbox.y + bbox.height / 2
+    }
+}
+
+let lastLine;
+
+function drawLine(p1, p2) {
+    if (lastLine) {
+        lastLine.remove();
+    }
+
+    lastLine = d3.select('#map-world')
+        .select('g')
+        .append('line')
+        .attr('x1', p1.x)
+        .attr('y1', p1.y)
+        .attr('x2', p2.x)
+        .attr('y2', p2.y)
+        .attr('style', 'stroke: red; stroke-width: 2');
+}
+
 $(document).ready(() => {
     const socket = new SocketService();
 
@@ -42,7 +67,18 @@ $(document).ready(() => {
         let objectCountry = d3.select('#map-world')
             .select('#' + message.countryCode.toUpperCase());
 
+        let objectRemoteCountry = d3.select('#map-world')
+            .select('#' + message.remoteCountryCode.toUpperCase());
+
+        if (objectRemoteCountry) {
+            let countryPoint = getCenterPoint(objectCountry.node());
+            let remotePoint = getCenterPoint(objectRemoteCountry.node());
+
+            drawLine(countryPoint, remotePoint);
+        }
+
         let objectVietNamRegion = null;
+
         if (message.countryCode === 'vn') {
             objectVietNamRegion = d3.select('#map-viet-nam')
                 .select('#VN-' + message.regionCode);
@@ -55,6 +91,10 @@ $(document).ready(() => {
             let color = "rgb(" + currentColor.R + "," + currentColor.G + "," + currentColor.B + ")";
 
             objectCountry.style('fill', color);
+            if (objectRemoteCountry) {
+                objectRemoteCountry.style('fill', color);
+            }
+
             if (objectVietNamRegion) {
                 objectVietNamRegion.style('fill', color);
             }

@@ -21,6 +21,7 @@ export class MessagesServer extends HttpServer {
                     id: 0,
                     location: currentData.location,
                     remoteHost: currentData.remoteHost,
+                    remoteCountryCode: currentData.remoteCountryCode,
                     regionCode: currentData.regionCode,
                     countryCode: currentData.countryCode,
                     name: currentData.name
@@ -38,6 +39,7 @@ export class MessagesServer extends HttpServer {
                                 id: 0,
                                 location: currentData.location,
                                 remoteHost: currentData.remoteHost,
+                                remoteCountryCode: currentData.remoteCountryCode,
                                 regionCode: currentData.regionCode,
                                 countryCode: currentData.countryCode,
                                 name: currentData.name

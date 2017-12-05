@@ -8,6 +8,7 @@ export class RData {
     public publicIP: string;
     public location: string;
     public remoteHost: string;
+    public remoteCountryCode: string;
     public macAddress: string;
     public regionCode: string;
     public countryCode: string;
