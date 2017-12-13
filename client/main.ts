@@ -29,10 +29,16 @@ function createColorRange(c1, c2) {
 }
 
 function getCenterPoint(object: any) {
-    let bbox = object.getBBox();
-    return {
-        x: bbox.x + bbox.width / 2,
-        y: bbox.y + bbox.height / 2
+    if (object) {
+        let bbox = object.getBBox();
+        return {
+            x: bbox.x + bbox.width / 2,
+            y: bbox.y + bbox.height / 2
+        }
+    } else {
+        return {
+            x: 0, y: 0
+        }
     }
 }
 
