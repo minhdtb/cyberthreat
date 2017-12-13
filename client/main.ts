@@ -79,7 +79,9 @@ $(document).ready(() => {
         if (objectCountry && objectRemoteCountry) {
             let countryPoint = getCenterPoint(objectCountry.node());
             let remotePoint = getCenterPoint(objectRemoteCountry.node());
-
+            if (remotePoint.x === 0 && remotePoint.y === 0)
+                remotePoint = countryPoint;
+            
             drawLine(countryPoint, remotePoint);
         }
 
