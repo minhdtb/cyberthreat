@@ -110,9 +110,6 @@ export class ApiRoute extends Route {
                         ch.publish(ex, '', new Buffer(JSON.stringify(req.body)));
                     }
 
-                    ch.close();
-                    conn.close();
-
                     res.send({
                         success: true
                     });
