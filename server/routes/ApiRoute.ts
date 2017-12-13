@@ -3,6 +3,8 @@ import * as express from "express";
 import DataService from "../services/DataService";
 import {LIMIT} from "./IndexRoute";
 
+const amqp = require('amqplib/callback_api');
+
 export class ApiRoute extends Route {
 
     registerRoutes() {
@@ -76,6 +78,19 @@ export class ApiRoute extends Route {
                     res.status(500);
                     res.send(error);
                 });
+        });
+
+        this._post('/api/detected', (req: express.Request, res: express.Response) => {
+            amqp.connect('amqp://minhdtb:123456@127.0.0.1', function (err, conn) {
+                conn.createChannel(function (err, ch) {
+                    const ex = 'message';
+                    ch.assertExchange(ex, 'fanout', {durable: false});
+                    ch.publish(ex, '', new Buffer(req.body));
+                    res.send({
+                        success: true
+                    })
+                });
+            });
         });
     }
 }
