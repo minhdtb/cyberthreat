@@ -35,7 +35,9 @@ export class Application {
             next();
         });
 
-        this.express.use(new ApiRoute(this));
+        let api = new ApiRoute(this);
+        api.initialize();
+        this.express.use(api);
         this.express.use(new IndexRoute(this));
     }
 

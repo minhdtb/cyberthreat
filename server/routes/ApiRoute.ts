@@ -2,10 +2,31 @@ import {Route} from "./Route";
 import * as express from "express";
 import DataService from "../services/DataService";
 import {LIMIT} from "./IndexRoute";
+import {Channel} from "amqplib/callback_api";
 
 const amqp = require('amqplib/callback_api');
 
 export class ApiRoute extends Route {
+
+    private channel: Channel;
+
+    initialize() {
+        amqp.connect('amqp://minhdtb:123456@127.0.0.1', (err, conn) => {
+            if (err) {
+                return;
+            }
+
+            conn.createChannel((err, ch) => {
+                if (err) {
+                    return;
+                }
+
+                ch.assertExchange('message', 'fanout', {durable: false});
+                
+                this.channel = ch;
+            });
+        });
+    }
 
     registerRoutes() {
         this._get('/api/get-location', (req: express.Request, res: express.Response) => {
@@ -81,40 +102,16 @@ export class ApiRoute extends Route {
         });
 
         this._post('/api/detected', (req: express.Request, res: express.Response) => {
-            amqp.connect('amqp://minhdtb:123456@127.0.0.1', function (err, conn) {
-                if (err) {
-                    res.statusCode = 500;
-                    res.json({
-                        success: false,
-                        message: err.toString()
-                    });
-
-                    return;
-                }
-
-                conn.createChannel(function (err, ch) {
-                    if (err) {
-                        res.statusCode = 500;
-                        res.json({
-                            success: false,
-                            message: err.toString()
-                        });
-
-                        return;
-                    }
-
-                    const ex = 'message';
-                    ch.assertExchange(ex, 'fanout', {durable: false});
-
-                    if (req.body) {
-                        ch.publish(ex, '', new Buffer(JSON.stringify(req.body)));
-                    }
-
-                    res.send({
-                        success: true
-                    });
+            if (this.channel) {
+                this.channel.publish('message', '', new Buffer(JSON.stringify(req.body)));
+                res.json({
+                    success: true
                 });
-            });
+            } else {
+                res.json({
+                    success: false
+                });
+            }
         });
     }
 }
