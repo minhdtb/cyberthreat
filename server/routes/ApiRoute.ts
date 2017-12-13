@@ -85,7 +85,10 @@ export class ApiRoute extends Route {
                 conn.createChannel(function (err, ch) {
                     const ex = 'message';
                     ch.assertExchange(ex, 'fanout', {durable: false});
-                    ch.publish(ex, '', new Buffer(req.body));
+
+                    if (req.body)
+                        ch.publish(ex, '', new Buffer(JSON.stringify(req.body)));
+                    
                     res.send({
                         success: true
                     })
