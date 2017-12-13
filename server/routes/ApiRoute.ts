@@ -82,13 +82,33 @@ export class ApiRoute extends Route {
 
         this._post('/api/detected', (req: express.Request, res: express.Response) => {
             amqp.connect('amqp://minhdtb:123456@127.0.0.1', function (err, conn) {
+                if (err) {
+                    res.statusCode = 500;
+                    res.json({
+                        success: false,
+                        message: err.toString()
+                    });
+
+                    return;
+                }
+
                 conn.createChannel(function (err, ch) {
+                    if (err) {
+                        res.statusCode = 500;
+                        res.json({
+                            success: false,
+                            message: err.toString()
+                        });
+
+                        return;
+                    }
+                    
                     const ex = 'message';
                     ch.assertExchange(ex, 'fanout', {durable: false});
 
                     if (req.body)
                         ch.publish(ex, '', new Buffer(JSON.stringify(req.body)));
-                    
+
                     res.send({
                         success: true
                     })
