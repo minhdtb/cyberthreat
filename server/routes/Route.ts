@@ -12,6 +12,9 @@ export abstract class Route {
         this.application = application;
         this.router = express.Router();
         this.registerRoutes();
+    }
+
+    getRouter() {
         return this.router;
     }
 
