@@ -102,16 +102,20 @@ export class ApiRoute extends Route {
 
                         return;
                     }
-                    
+
                     const ex = 'message';
                     ch.assertExchange(ex, 'fanout', {durable: false});
 
-                    if (req.body)
+                    if (req.body) {
                         ch.publish(ex, '', new Buffer(JSON.stringify(req.body)));
+                    }
+
+                    ch.close();
+                    conn.close();
 
                     res.send({
                         success: true
-                    })
+                    });
                 });
             });
         });
