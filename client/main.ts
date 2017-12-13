@@ -70,7 +70,7 @@ $(document).ready(() => {
         let objectRemoteCountry = d3.select('#map-world')
             .select('#' + message.remoteCountryCode.toUpperCase());
 
-        if (objectRemoteCountry) {
+        if (objectCountry && objectRemoteCountry) {
             let countryPoint = getCenterPoint(objectCountry.node());
             let remotePoint = getCenterPoint(objectRemoteCountry.node());
 
@@ -90,7 +90,10 @@ $(document).ready(() => {
             let currentColor = colors[index];
             let color = "rgb(" + currentColor.R + "," + currentColor.G + "," + currentColor.B + ")";
 
-            objectCountry.style('fill', color);
+            if (objectCountry) {
+                objectCountry.style('fill', color);
+            }
+
             if (objectRemoteCountry) {
                 objectRemoteCountry.style('fill', color);
             }
