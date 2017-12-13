@@ -2,6 +2,7 @@ import {SocketService} from "./SocketService";
 import {Message} from "./Message";
 import * as d3 from "d3";
 import * as _ from "lodash";
+import moment from 'moment';
 
 const PROMPT = 'InfoSec> ';
 
@@ -81,7 +82,7 @@ $(document).ready(() => {
             let remotePoint = getCenterPoint(objectRemoteCountry.node());
             if (remotePoint.x === 0 && remotePoint.y === 0)
                 remotePoint = countryPoint;
-            
+
             drawLine(countryPoint, remotePoint);
         }
 
@@ -119,11 +120,11 @@ $(document).ready(() => {
     });
 
     socket.get('message').subscribe((message: Message) => {
-        terminal.echo(PROMPT + '[[b;green;]Malware Detected] - Name: [[b;red;]' + message.name + ']');
+        terminal.echo(PROMPT + `[[b;gray;]${moment(new Date()).format('DD/MM/YYYY HH:mm:ss')}] - [[b;green;]Malware Detected] - Name: [[b;red;]` + message.name + ']');
     });
 
     socket.get('blacklist').subscribe((message: Message) => {
-        terminal.echo(PROMPT + '[[b;blue;]Black Host Detected] - Remote Host: [[b;red;]' + message.remoteHost + ']');
+        terminal.echo(PROMPT + `[[b;gray;]${moment(new Date()).format('DD/MM/YYYY HH:mm:ss')}] - [[b;blue;]Black Host Detected] - Remote Host: [[b;red;]` + message.remoteHost + ']');
     });
 
     $('#console').draggable();
