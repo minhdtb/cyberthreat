@@ -2,7 +2,7 @@ import {SocketService} from "./SocketService";
 import {Message} from "./Message";
 import * as d3 from "d3";
 import * as _ from "lodash";
-import moment from 'moment';
+import * as moment from 'moment';
 
 const PROMPT = 'InfoSec> ';
 
