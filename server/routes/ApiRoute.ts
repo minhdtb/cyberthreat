@@ -10,7 +10,7 @@ export class ApiRoute extends Route {
 
     private channel: Channel;
 
-    initialize() {
+    public init() {
         amqp.connect('amqp://minhdtb:123456@127.0.0.1', (err, conn) => {
             if (err) {
                 return;
@@ -22,7 +22,7 @@ export class ApiRoute extends Route {
                 }
 
                 ch.assertExchange('message', 'fanout', {durable: false});
-                
+
                 this.channel = ch;
             });
         });
